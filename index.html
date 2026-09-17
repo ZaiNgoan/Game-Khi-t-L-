@@ -10,7 +10,7 @@
   <div class="container">
     <h1>⚔️ ĐẤU TRƯỜNG THẺ BÀI CHIẾN THUẬT</h1>
 
-    <!-- SÀN ĐẤU -->
+    <!-- 1. SÀN ĐẤU -->
     <div class="arena">
       <!-- Người chơi -->
       <div class="card" id="card-p">
@@ -70,7 +70,7 @@
       </button>
     </div>
 
-    <!-- LOG CHIẾN ĐẤU -->
+    <!-- KHUNG LOG CHIẾN ĐẤU -->
     <div id="combat-log"></div>
 
     <!-- KHU VỰC CHỌN BOSS -->
@@ -80,7 +80,7 @@
         <button onclick="selectEnemy('training')">🎯 Bù Nhìn Tập Luyện (Thử trang bị)</button>
       </div>
 
-      <div style="font-weight: bold; margin-bottom: 8px; color: #38bdf8;">2. ELITE BOSS (Mặc định Thủ 10 | Bạn chỉ được mang 1 THẺ DUY NHẤT):</div>
+      <div style="font-weight: bold; margin-bottom: 8px; color: #38bdf8;">2. ELITE BOSS (Mặc định Thủ 10 | Mang tối đa 1 THẺ):</div>
       <div class="btn-group" style="margin-bottom: 12px;">
         <button onclick="selectEnemy('archer')">🏹 Nguyễn Hoa</button>
         <button onclick="selectEnemy('mage')">🔮 Đức Lương</button>
@@ -90,14 +90,14 @@
         <button onclick="selectEnemy('frenzy')">⚡ Phạm Đạt</button>
       </div>
 
-      <div style="font-weight: bold; margin-bottom: 8px; color: #e11d48;">3. SIÊU BOSS (Được mang TỐI ĐA 3 THẺ):</div>
+      <div style="font-weight: bold; margin-bottom: 8px; color: #e11d48;">3. SIÊU BOSS (Mang tối đa 3 THẺ):</div>
       <div class="btn-group" style="margin-bottom: 12px;">
         <button onclick="selectEnemy('mora')" style="background: #0d9488;">🐍 Boss Mora (750 HP)</button>
         <button onclick="selectEnemy('atula')" style="background: #b91c1c;">👹 Boss Atula (1200 HP)</button>
         <button onclick="selectEnemy('kolos')" style="background: #7c3aed;">💀 Boss Kolos (1000 HP)</button>
       </div>
 
-      <div style="font-weight: bold; margin-bottom: 8px; color: #f59e0b;">4. FINAL BOSS (Được mang TỐI ĐA 3 THẺ):</div>
+      <div style="font-weight: bold; margin-bottom: 8px; color: #f59e0b;">4. FINAL BOSS (ĐƯỢC MANG TỐI ĐA 5 THẺ):</div>
       <div class="btn-group">
         <button onclick="selectEnemy('bles')" style="background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); font-weight: bold;">
           👑 ULTRA BLES (10.000 HP - 65 ATK - 30 DEF)
@@ -117,9 +117,19 @@
           <button onclick="resetGame()" style="background: #475569; font-size: 11px;">🔄 Chơi lại</button>
         </div>
       </div>
-      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Chỉ roll trúng các thẻ đã mở khóa vào Pool!</div>
+      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Chỉ roll trúng thẻ đã mở khóa vào Pool!</div>
 
-      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">Kho thẻ bài sở hữu:</div>
+      <!-- THANH TAB PHÂN LOẠI THẺ BÀI -->
+      <div style="margin-top: 16px;">
+        <div style="font-weight: bold; margin-bottom: 8px;">Kho thẻ bài sở hữu:</div>
+        <div class="filter-tabs">
+          <button class="tab-btn active" onclick="setCardFilter('all', this)">🌟 Tất Cả</button>
+          <button class="tab-btn" onclick="setCardFilter('basic', this)">🟢 Mặc Định</button>
+          <button class="tab-btn" onclick="setCardFilter('elite', this)">🔵 Boss Elite</button>
+          <button class="tab-btn" onclick="setCardFilter('super', this)">🟣 Siêu Boss & Final</button>
+        </div>
+      </div>
+
       <div class="roll-section" id="roll-pool"></div>
     </div>
   </div>
