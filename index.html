@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đấu Trường Thẻ Bài Bạn Bè</title>
-  <!-- Nối với file giao diện -->
+  <title>Đấu Trường Thẻ Bài Chiến Thuật</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>⚔️ ĐẤU TRƯỜNG THẺ BÀI CHIẾN THUẬT</h1>
 
+    <!-- 1. SÀN ĐẤU -->
     <div class="arena">
       <!-- Người chơi -->
       <div class="card" id="card-p">
@@ -22,9 +22,12 @@
           <img id="p-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif" alt="Player">
         </div>
         <div class="bar-wrap"><div id="p-hp-bar" class="bar-fill hp-player" style="width: 100%;"></div></div>
-        <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 100 / 100</div>
-        <div class="stats" id="p-stats">Tấn công: 5 | Phòng thủ: 5 | Tốc đánh: 2s/đòn</div>
-        <div class="equipped-card" id="p-equipped">Thẻ trang bị: Chưa có</div>
+        <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 150 / 150</div>
+        <div class="stats" id="p-stats">Tấn công: 8 | Giáp: 6 | Tốc: 2s/đòn</div>
+        <div class="equipped-box">
+          <div style="font-weight: bold; font-size: 12px; margin-bottom: 4px;">Thẻ đang mang (Tối đa 3):</div>
+          <div id="p-equipped-list">Chưa trang bị thẻ nào</div>
+        </div>
       </div>
 
       <!-- Đối thủ -->
@@ -38,15 +41,22 @@
         </div>
         <div class="bar-wrap"><div id="e-hp-bar" class="bar-fill hp-enemy" style="width: 100%;"></div></div>
         <div id="e-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 0 / 0</div>
-        <div class="stats" id="e-stats">Tấn công: 0 | Phòng thủ: 0 | Tốc đánh: 2s/đòn</div>
-        <div class="equipped-card" id="e-equipped">Kỹ năng mang theo: Không</div>
+        <div class="stats" id="e-stats">Tấn công: 0 | Giáp: 0 | Tốc: 2s/đòn</div>
+        <div class="equipped-box">
+          <div style="font-weight: bold; font-size: 12px; margin-bottom: 4px;">Kỹ năng mang theo:</div>
+          <div id="e-equipped">Không</div>
+        </div>
       </div>
     </div>
 
-    <!-- Điều khiển -->
+    <!-- 2. KHUNG LOG Ở NGAY DƯỚI SÀN ĐẤU -->
+    <div id="combat-log"></div>
+
+    <!-- 3. KHU VỰC KHIÊU CHIẾN -->
     <div class="controls">
-      <div style="font-weight: bold; margin-bottom: 8px;">1. Khiêu chiến để mở khóa Roll thẻ:</div>
+      <div style="font-weight: bold; margin-bottom: 8px;">⚔️ Chọn đối thủ khiêu chiến (Thắng nhận 10 lượt Roll):</div>
       <div class="btn-group">
+        <button onclick="startBattle('training')">🎯 Bù Nhìn Tập Luyện (Dễ)</button>
         <button onclick="startBattle('archer')">🏹 Đấu Nguyễn Hoa</button>
         <button onclick="startBattle('mage')">🔮 Đấu Đức Lương</button>
         <button onclick="startBattle('tank')">🛡️ Đấu Dương Võ</button>
@@ -54,15 +64,24 @@
         <button onclick="startBattle('crit')">💥 Đấu Đăng Khang</button>
         <button onclick="startBattle('frenzy')">⚡ Đấu Phạm Đạt</button>
       </div>
-
-      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">2. Khu vực Roll thẻ bài (Đánh bại mới mở khóa):</div>
-      <div class="roll-section" id="roll-pool"></div>
     </div>
 
-    <div id="combat-log"></div>
+    <!-- 4. KHU VỰC ROLL VÀ KHO THẺ Ở DƯỚI CÙNG -->
+    <div class="controls">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: bold;">🎲 Máy Roll Thẻ Bài: <span id="roll-tickets" style="color: #f59e0b; font-size: 16px;">0</span> vé</div>
+        <div>
+          <button id="btn-roll-1" onclick="rollCard(1)" style="background: #10b981;">Roll 1 Lần</button>
+          <button id="btn-roll-10" onclick="rollCard(10)" style="background: #f59e0b;">Roll 10 Lần</button>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% ra thẻ mới | 75% trượt. Đã mở khóa sẽ lưu vĩnh viễn trên máy!</div>
+
+      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">Kho thẻ bài đã sở hữu:</div>
+      <div class="roll-section" id="roll-pool"></div>
+    </div>
   </div>
 
-  <!-- Nối với file chạy code game -->
   <script src="game.js"></script>
 </body>
 </html>
