@@ -22,8 +22,8 @@
           <img id="p-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif" alt="Player">
         </div>
         <div class="bar-wrap"><div id="p-hp-bar" class="bar-fill hp-player" style="width: 100%;"></div></div>
-        <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 150 / 150</div>
-        <div class="stats" id="p-stats">Tấn công: 8 | Giáp: 6 | Tốc: 2s/đòn</div>
+        <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 100 / 100</div>
+        <div class="stats" id="p-stats">Tấn công: 5 | Giáp: 5 | Tốc: 2s/đòn</div>
         <div class="equipped-box">
           <div style="font-weight: bold; font-size: 12px; margin-bottom: 4px;">Thẻ đang mang (Tối đa 3):</div>
           <div id="p-equipped-list">Chưa trang bị thẻ nào</div>
@@ -41,6 +41,18 @@
         </div>
         <div class="bar-wrap"><div id="e-hp-bar" class="bar-fill hp-enemy" style="width: 100%;"></div></div>
         <div id="e-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 0 / 0</div>
+
+        <!-- Thanh Huyết Hồn hiển thị riêng cho Boss Atula -->
+        <div id="atula-soul-box" style="display: none; margin-top: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #f43f5e; font-weight: bold;">
+            <span>🩸 Huyết Hồn:</span>
+            <span id="atula-soul-txt">0</span>
+          </div>
+          <div class="bar-wrap" style="height: 8px; background: #3f1d24; margin: 2px 0 6px 0;">
+            <div id="atula-soul-bar" class="bar-fill" style="background: #f43f5e; width: 0%;"></div>
+          </div>
+        </div>
+
         <div class="stats" id="e-stats">Tấn công: 0 | Giáp: 0 | Tốc: 2s/đòn</div>
         <div class="equipped-box">
           <div style="font-weight: bold; font-size: 12px; margin-bottom: 4px;">Kỹ năng mang theo:</div>
@@ -49,19 +61,19 @@
       </div>
     </div>
 
-    <!-- KHUNG ĐIỀU KHIỂN CHIẾN ĐẤU -->
+    <!-- NÚT BẮT ĐẦU CHIẾN ĐẤU -->
     <div class="battle-actions">
       <button id="btn-start-battle" class="btn-start" onclick="triggerStartBattle()" disabled>
         ⚔️ CHỌN ĐỐI THỦ PHÍA DƯỚI ĐỂ CHIẾN ĐẤU
       </button>
     </div>
 
-    <!-- 2. KHUNG LOG Ở NGAY DƯỚI SÀN ĐẤU -->
+    <!-- KHUNG LOG CHIẾN ĐẤU -->
     <div id="combat-log"></div>
 
-    <!-- 3. KHU VỰC CHỌN ĐỐI THỦ KHIÊU CHIẾN -->
+    <!-- KHU VỰC CHỌN ĐỐI THỦ -->
     <div class="controls">
-      <div style="font-weight: bold; margin-bottom: 8px;">1. Chọn đối thủ muốn khiêu chiến:</div>
+      <div style="font-weight: bold; margin-bottom: 8px;">1. Chọn đối thủ muốn khiêu chiến (Mỗi lần thắng nhận 1 vé Roll):</div>
       <div class="btn-group">
         <button onclick="selectEnemy('training')">🎯 Bù Nhìn Tập Luyện (Dễ)</button>
         <button onclick="selectEnemy('archer')">🏹 Nguyễn Hoa</button>
@@ -70,14 +82,16 @@
         <button onclick="selectEnemy('phoenix')">🔥 Hữu Phai</button>
         <button onclick="selectEnemy('crit')">💥 Đăng Khang</button>
         <button onclick="selectEnemy('frenzy')">⚡ Phạm Đạt</button>
+        <button onclick="selectEnemy('mora')" style="background: #0d9488;">🐍 Boss Mora (750 HP)</button>
+        <button onclick="selectEnemy('atula')" style="background: #b91c1c;">👹 Boss Atula (1200 HP)</button>
       </div>
     </div>
 
-    <!-- 4. KHU VỰC ROLL VÀ KHO THẺ Ở DƯỚI CÙNG -->
+    <!-- MÁY ROLL VÀ KHO THẺ -->
     <div class="controls">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
         <div style="font-weight: bold;">
-          🎲 Máy Roll Thẻ Bài: <span id="roll-tickets" style="color: #f59e0b; font-size: 18px;">10</span> vé
+          🎲 Máy Roll Thẻ Bài: <span id="roll-tickets" style="color: #f59e0b; font-size: 18px;">3</span> vé
         </div>
         <div style="display: flex; gap: 8px;">
           <button onclick="rollCard(1)" style="background: #10b981;">🎲 Roll 1 Lần</button>
@@ -85,14 +99,14 @@
           <button onclick="resetGame()" style="background: #475569; font-size: 11px;">🔄 Chơi lại</button>
         </div>
       </div>
-      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Lưu vĩnh viễn trên máy!</div>
+      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Chỉ roll trúng thẻ đã mở khóa vào Pool!</div>
 
-      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">Kho thẻ bài đã mở khóa:</div>
+      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">Kho thẻ bài:</div>
       <div class="roll-section" id="roll-pool"></div>
     </div>
   </div>
 
-  <!-- POPUP BẬT LÊN KHI ROLL THẺ BÀI -->
+  <!-- POPUP KẾT QUẢ GACHA -->
   <div id="gacha-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 id="gacha-title">🎉 KẾT QUẢ ROLL</h3>
