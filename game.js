@@ -2,7 +2,6 @@
 // 1. TẤT CẢ THẺ BÀI TRONG GAME (12 THẺ)
 // ==========================================
 const CARDS = {
-  // 3 THẺ CƠ BẢN
   basic_atk: {
     id: 'basic_atk',
     name: 'Thẻ Tấn Công Cơ Bản',
@@ -27,8 +26,6 @@ const CARDS = {
     desc: 'Tăng thêm 8 Giáp vào chỉ số gốc.',
     atkBonus: 0, hpBonus: 0, defBonus: 8
   },
-
-  // 7 ELITE BOSS (Trang bị: +20 HP, +3 ATK)
   archer: {
     id: 'archer',
     name: 'Thẻ Xạ Thủ Nguyễn Hoa',
@@ -92,8 +89,6 @@ const CARDS = {
     desc: '+20 HP, +3 ATK. Mỗi 2s tăng +1 Thủ (max +15). Khi đạt +15 Thủ lập tức đánh liên hoàn 7 lần (50% Thủ).',
     atkBonus: 3, hpBonus: 20, defBonus: 0
   },
-
-  // 4 SIÊU BOSS (Trang bị: +75 HP, +5 ATK)
   mora: {
     id: 'mora',
     name: 'Thẻ Hấp Thụ Mora',
@@ -130,8 +125,6 @@ const CARDS = {
     desc: '+75 HP, +5 ATK. Cứ mỗi 4s có 5% tỉ lệ lập tức gây sát thương bằng 50% lượng máu hiện tại của đối thủ.',
     atkBonus: 5, hpBonus: 75, defBonus: 0
   },
-
-  // FINAL BOSS: KHIẾT NGUYỄN (Trang bị: +75 HP, +5 ATK)
   bles: {
     id: 'bles',
     name: 'Thẻ Tối Thượng Khiết Nguyễn',
@@ -640,13 +633,13 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     let reflect = Math.round(raw * 0.5);
     atkObj.hp = Math.max(0, atkObj.hp - reflect);
     showPopup(defType, `BLOCK!`, 'dmg-true');
-    showPopup(atkType, `-${reflect}`, 'dmg-norm');
+    showPopup(attacker => (attackerType === 'player' ? 'player' : 'enemy'), `-${reflect}`, 'dmg-norm');
     showSkillBanner(defType, '🛡️ BLOCK & PHẢN ĐÒN!', '#facc15');
     log(`🛡️ [${defObj.name}] BLOCK & phản lại <b>${reflect}</b> sát thương!`, 'log-sys');
     return;
   }
 
-  // MORA: TĂNG TỈ LỆ LÊN 80% (0.80)
+  // MORA: TỈ LỆ 80% (0.80)
   if (defCardIds.includes('mora') && Math.random() < 0.80) {
     let healAmount = Math.max(1, Math.round(raw * 0.5));
     defObj.hp = Math.min(defObj.maxHp, defObj.hp + healAmount);
@@ -707,7 +700,7 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     defObj.hp = Math.max(0, defObj.hp - trueDmg);
     setTimeout(() => {
       showPopup(defType, `🎯 -${trueDmg}`, 'dmg-true');
-      showSkillBanner(atkType, '🎯 NGUYỄN HOA XUYÊN GIÁP!', '#a855f7');
+      showSkillBanner(defType, '🎯 NGUYỄN HOA XUYÊN GIÁP!', '#a855f7');
     }, 120);
     log(`🎯 [${atkObj.name}] Xạ Thủ: Bắn xuyên giáp <b>+${trueDmg}</b> ST Chuẩn!`, 'log-sys');
   }
