@@ -131,7 +131,7 @@ const CARDS = {
     atkBonus: 5, hpBonus: 75, defBonus: 0
   },
 
-  // FINAL BOSS (KHIẾT NGUYỄN)
+  // FINAL BOSS: KHIẾT NGUYỄN (Trang bị: +75 HP, +5 ATK)
   bles: {
     id: 'bles',
     name: 'Thẻ Tối Thượng Khiết Nguyễn',
@@ -152,6 +152,7 @@ let poolAvailableCards = JSON.parse(localStorage.getItem('poolAvailableCards')) 
 let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
 let equippedCardIds = JSON.parse(localStorage.getItem('equippedCardIds')) || [];
 let rollTickets = (localStorage.getItem('rollTickets') !== null) ? parseInt(localStorage.getItem('rollTickets')) : 10;
+let hallOfFame = JSON.parse(localStorage.getItem('hallOfFame')) || [];
 let currentCardFilter = 'all';
 
 DEFAULT_POOL.forEach(id => {
@@ -163,9 +164,11 @@ function saveData() {
   localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
   localStorage.setItem('equippedCardIds', JSON.stringify(equippedCardIds));
   localStorage.setItem('rollTickets', rollTickets);
+  localStorage.setItem('hallOfFame', JSON.stringify(hallOfFame));
 }
 
-const BASE_STATS = { hp: 100, atk: 5, def: 5 };
+// CÂN BẰNG: BASE ATK = 10, BASE DEF = 0
+const BASE_STATS = { hp: 100, atk: 10, def: 0 };
 let player = {
   name: "Nhân Vật Chính",
   maxHp: BASE_STATS.hp,
@@ -234,12 +237,11 @@ function calcDamage(atk, def) {
 
 function getMaxEquipLimit() {
   if (!enemy || enemy.id === 'training') return 3;
-  if (enemy.tier === 'elite') return 2;
-  if (enemy.tier === 'final') return 5;
-  return 3;
+  if (enemy.tier === 'elite') return 2; // Elite: 2 thẻ
+  if (enemy.tier === 'final') return 5; // Final: 5 thẻ
+  return 3; // Siêu Boss: 3 thẻ
 }
 
-// Kiểm tra điều kiện khiêu chiến Ayanokouji (phải mang đủ 3 thẻ Siêu Boss: Mora, Atula, Kolos)
 function checkAyanokoujiRequirement() {
   if (!enemy || enemy.id !== 'ayanokouji') return true;
   const requiredSuperCards = ['mora', 'atula', 'kolos'];
@@ -266,7 +268,7 @@ function calculatePlayerStats(refillHp = false) {
 }
 
 // ==========================================
-// 3. CHỌN ĐỐI THỦ & VÀO TRẬN
+// 3. CHỌN ĐỐI THỦ & VÀO TRẬN (DEF TẤT CẢ VỀ 0)
 // ==========================================
 function selectEnemy(targetId) {
   if (isFighting) {
@@ -285,7 +287,7 @@ function selectEnemy(targetId) {
       tier: 'basic',
       rewardTickets: 1,
       imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png',
-      maxHp: 60, hp: 60, atk: 4, def: 2, cards: [], attackCooldown: 3
+      maxHp: 60, hp: 60, atk: 4, def: 0, cards: [], attackCooldown: 3
     };
   } else if (targetId === 'mora') {
     enemy = {
@@ -294,7 +296,7 @@ function selectEnemy(targetId) {
       tier: 'super',
       rewardTickets: 4,
       imgUrl: CARDS.mora.imgUrl,
-      maxHp: 750, hp: 750, atk: 4, def: 6,
+      maxHp: 750, hp: 750, atk: 4, def: 0,
       cards: ['mora'],
       attackCooldown: 2,
       moraHealCount: 0,
@@ -307,7 +309,7 @@ function selectEnemy(targetId) {
       tier: 'super',
       rewardTickets: 4,
       imgUrl: CARDS.atula.imgUrl,
-      maxHp: 1200, hp: 1200, atk: 10, def: 8,
+      maxHp: 1200, hp: 1200, atk: 10, def: 0,
       cards: ['atula'],
       attackCooldown: 2,
       bloodSoul: 0
@@ -320,7 +322,7 @@ function selectEnemy(targetId) {
       tier: 'super',
       rewardTickets: 4,
       imgUrl: CARDS.kolos.imgUrl,
-      maxHp: 1000, hp: 1000, atk: 12, def: 8,
+      maxHp: 1000, hp: 1000, atk: 12, def: 0,
       cards: ['kolos'],
       attackCooldown: 2
     };
@@ -342,13 +344,14 @@ function selectEnemy(targetId) {
       tier: 'final',
       rewardTickets: 10,
       imgUrl: CARDS.bles.imgUrl,
-      maxHp: 10000, hp: 10000, atk: 65, def: 30,
+      maxHp: 10000, hp: 10000, atk: 65, def: 0,
       cards: ['bles'],
       attackCooldown: 3,
       blesStacks: 0,
       blesBonusAtk: 0
     };
   } else {
+    // 7 ELITE BOSS: DEF TẤT CẢ VỀ 0
     const baseCard = CARDS[targetId];
     enemy = {
       id: targetId,
@@ -358,7 +361,7 @@ function selectEnemy(targetId) {
       imgUrl: baseCard.imgUrl,
       maxHp: 120, hp: 120,
       atk: 10,
-      def: 10,
+      def: 0,
       cards: [targetId],
       attackCooldown: 2,
       cruiseDefStacks: 0,
@@ -394,7 +397,6 @@ function triggerStartBattle() {
     return;
   }
 
-  // KIỂM TRA ĐIỀU KIỆN BOSS AYANOKOUJI
   if (enemy.id === 'ayanokouji' && !checkAyanokoujiRequirement()) {
     alert("🔒 ĐIỀU KIỆN KHÓA: Bạn bắt buộc phải trang bị đủ cả 3 thẻ Siêu Boss (Mora, Atula, Kolos) thì mới được quyền khiêu chiến Ayanokouji-kun!");
     return;
@@ -472,7 +474,6 @@ function battleTick() {
   applyPerSecond(player, enemy, pActiveCards, 'player', 'enemy', 'log-p');
   applyPerSecond(enemy, player, enemy.cards, 'enemy', 'player', 'log-e');
 
-  // THẺ AYANOKOUJI (NGƯỜI CHƠI TRANG BỊ)
   if (tick % 4 === 0 && pActiveCards.includes('ayanokouji')) {
     if (Math.random() < 0.05) {
       let cutDmg = Math.max(1, Math.round(enemy.hp * 0.5));
@@ -483,7 +484,6 @@ function battleTick() {
     }
   }
 
-  // CƠ CHẾ BOSS AYANOKOUJI: Khi 1 trong 2 bên <= 50% Max HP
   if (enemy.id === 'ayanokouji' && !ayanokoujiExecuted) {
     if (player.hp <= player.maxHp * 0.5 || enemy.hp <= enemy.maxHp * 0.5) {
       ayanokoujiExecuted = true;
@@ -752,13 +752,52 @@ function checkCombatEnd() {
     btnStart.innerText = `⚔️ TÁI ĐẤU VỚI ${enemy.name.toUpperCase()}`;
     renderCards();
     updateUI();
+
+    // NẾU HẠ GỤC FINAL BOSS KHIẾT NGUYỄN: BẬT POPUP VINH DANH BẢNG XẾP HẠNG
+    if (enemy.id === 'bles') {
+      setTimeout(() => {
+        document.getElementById('victory-modal').style.display = 'flex';
+      }, 800);
+    }
+
     return true;
   }
   return false;
 }
 
+// XỬ LÝ GỬI TÊN LÊN BẢNG XẾP HẠNG
+function submitVictoryName() {
+  const input = document.getElementById('winner-name-input');
+  const name = input.value.trim() || 'Vô Danh Anh Hùng';
+  const now = new Date();
+  const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} - ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+
+  hallOfFame.unshift({ name: name, time: timeStr });
+  saveData();
+  renderHallOfFame();
+
+  document.getElementById('victory-modal').style.display = 'none';
+  alert(`🏆 Chúc mừng ${name}! Tên của bạn đã được khắc ghi vào Bảng Xếp Hạng Phá Đảo!`);
+}
+
+function renderHallOfFame() {
+  const list = document.getElementById('hall-list');
+  if (hallOfFame.length === 0) {
+    list.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748b;">Chưa có anh hùng nào phá đảo. Hãy là người đầu tiên!</td></tr>';
+    return;
+  }
+
+  list.innerHTML = hallOfFame.map((item, idx) => `
+    <tr>
+      <td class="hall-rank">#${idx + 1}</td>
+      <td style="font-weight: bold; color: #facc15;">⭐ ${item.name}</td>
+      <td style="font-size: 11px; color: #94a3b8;">${item.time}</td>
+    </tr>
+  `).join('');
+}
+
 // ==========================================
-// 4. ROLL GACHA (CHỈ ROLL RA THẺ CHƯA SỞ HỮU)
+// 4. ROLL GACHA
 // ==========================================
 function rollCard(times) {
   if (rollTickets < times) {
@@ -766,11 +805,10 @@ function rollCard(times) {
     return;
   }
 
-  // LỌC CÁC THẺ TRONG POOL MÀ CHƯA SỞ HỮU (KHÔNG BAO GIỜ ROLL TRÙNG)
   const availableToRoll = poolAvailableCards.filter(id => !unlockedCards.includes(id));
 
   if (availableToRoll.length === 0) {
-    alert("🎉 Bạn đã mở khóa và sở hữu TOÀN BỘ các thẻ bài hiện có trong Pool! Hãy khiêu chiến thêm Boss mới để đưa thẻ vào Pool trước khi Roll tiếp.");
+    alert("🎉 Bạn đã mở khóa và sở hữu TOÀN BỘ các thẻ bài hiện có trong Pool! Hãy khiêu chiến thêm Boss mới để mở khóa thẻ vào Pool.");
     return;
   }
 
@@ -778,13 +816,11 @@ function rollCard(times) {
   const results = [];
 
   for (let i = 0; i < times; i++) {
-    // Cập nhật lại danh sách còn có thể roll theo thời gian thực trong lượt quay
     const remainingToRoll = poolAvailableCards.filter(id => !unlockedCards.includes(id));
 
     if (remainingToRoll.length > 0 && Math.random() < 0.25) {
-      // Bốc 1 thẻ chưa sở hữu
       const randomKey = remainingToRoll[Math.floor(Math.random() * remainingToRoll.length)];
-      unlockedCards.push(randomKey); // Thêm ngay vào danh sách sở hữu
+      unlockedCards.push(randomKey);
       results.push({ win: true, name: CARDS[randomKey].name, isNew: true });
     } else {
       results.push({ win: false, name: 'Trượt rồi...' });
@@ -919,7 +955,6 @@ function updateUI() {
     eqList.innerHTML = equippedCardIds.map(id => `<span class="equipped-tag">${CARDS[id].name}</span>`).join(' ');
   }
 
-  // Kiểm tra điều kiện khiêu chiến trên nút Bắt đầu
   const btnStart = document.getElementById('btn-start-battle');
   if (enemy && !isFighting) {
     if (equippedCardIds.length > maxLimit) {
@@ -969,4 +1004,5 @@ function resetGame() {
 
 calculatePlayerStats(true);
 renderCards();
+renderHallOfFame();
 updateUI();
