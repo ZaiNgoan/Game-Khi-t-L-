@@ -59,7 +59,7 @@ const CARDS = {
     enemyName: 'Ho-Oh Hữu Phai',
     tier: 'elite',
     imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/hooh.gif',
-    desc: '+20 HP, +3 ATK. Mỗi 1s thiêu đốt đối thủ mất 0.9% HP tối đa (ST chuẩn).', // Đã buff lên 0.9%
+    desc: '+20 HP, +3 ATK. Mỗi 1s thiêu đốt đối thủ mất 0.9% HP tối đa (ST chuẩn).',
     atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   crit: {
@@ -535,6 +535,10 @@ function applyCruisePassive(obj, opponent, cardIds, objType, objName, logCls) {
           opponent.hp = Math.max(0, opponent.hp - realDamage);
           showPopup((objType === 'player' ? 'enemy' : 'player'), `-${realDamage}`, 'dmg-norm');
           log(`🌊 [Triều Cường Đòn ${i}/7] gây <b>${realDamage}</b> sát thương lên ${opponent.name}!`, logCls);
+          
+          // Phát âm thanh phóng gai liên tục của Triều Cường
+          if (typeof playSpikeSound === 'function') playSpikeSound();
+
           updateUI();
           checkCombatEnd();
         }, i * 150);
@@ -552,6 +556,10 @@ function executeBlesUltimate() {
   showPopup('player', `💥 -${realDmg}`, 'dmg-crit');
   showSkillBanner('enemy', '👑 TRẢM SÁT 15% SÁT THƯƠNG!', '#f59e0b');
   log(`👑 <b>[KHIẾT NGUYỄN]</b> Kích hoạt TRẢM SÁT gây <b>${realDmg}</b> sát thương lên Bạn!`, 'log-crit');
+  
+  // Phát tiếng gầm của Rồng khi Final Boss tung tuyệt kỹ
+  if (typeof playDragonRoarSound === 'function') playDragonRoarSound();
+
   if ((enemy.blesStacks || 0) < 15) {
     enemy.blesStacks = (enemy.blesStacks || 0) + 1;
     enemy.blesBonusAtk = (enemy.blesBonusAtk || 0) + 30;
@@ -569,9 +577,12 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     showPopup(srcType, `+${source.hp - old}`, 'dmg-heal');
     showSkillBanner(srcType, '✨ THUẬT SƯ HỒI MÁU!', '#4ade80');
     log(`✨ [${source.name}] hồi <b>+${source.hp - old} HP</b>.`, logCls);
+    
+    // Phát âm thanh hồi máu leng keng
+    if (typeof playHealSound === 'function') playHealSound();
   }
   if (cardIds.includes('phoenix')) {
-    let burn = Math.max(1, Math.round(target.maxHp * 0.009)); // Đã buff lên 0.9%
+    let burn = Math.max(1, Math.round(target.maxHp * 0.009));
     target.hp = Math.max(0, target.hp - burn);
     showPopup(tarType, `-${burn}`, 'dmg-true');
     showSkillBanner(tarType, '🔥 THIÊU ĐỐT!', '#fb923c');
@@ -631,6 +642,10 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     showPopup(defType, `+${healAmount}`, 'dmg-heal');
     showSkillBanner(defType, '🐍 MORA HẤP THỤ!', '#0d9488');
     log(`🐍 [${defObj.name}] kích hoạt Hấp Thụ hồi lại <b>+${healAmount} HP</b>.`, 'log-sys');
+    
+    // Phát âm thanh hồi máu
+    if (typeof playHealSound === 'function') playHealSound();
+
     if (defObj.moraHealCount % 2 === 0 && (defObj.moraBonusAtk || 0) < 96) {
       defObj.moraBonusAtk = Math.min(96, (defObj.moraBonusAtk || 0) + 2);
       showSkillBanner(defType, `⚔️ +2 ATK MORA! (${defObj.moraBonusAtk}/96)`, '#f59e0b');
@@ -686,6 +701,9 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
       showSkillBanner(defType, '🎯 NGUYỄN HOA XUYÊN GIÁP!', '#a855f7');
     }, 120);
     log(`🎯 [${atkObj.name}] Xạ Thủ: Bắn xuyên giáp <b>+${trueDmg}</b> ST Chuẩn!`, 'log-sys');
+    
+    // Phát âm thanh phóng gai / bắn
+    if (typeof playSpikeSound === 'function') playSpikeSound();
   }
 }
 
@@ -823,7 +841,6 @@ function setCardFilter(filter, element) {
 }
 
 function toggleEquip(cardId) {
-  // CHẶN GIAN LẬN ĐỔI THẺ TRONG TRẬN ĐẤU
   if (isFighting) {
     alert("⚠️ Không thể tháo/lắp thẻ khi trận đấu đang diễn ra!");
     return;
@@ -899,6 +916,17 @@ function updateUI() {
   document.getElementById('p-hp-bar').style.width = (player.hp / player.maxHp * 100) + '%';
   document.getElementById('p-hp-txt').innerText = `HP: ${player.hp} / ${player.maxHp}`;
   document.getElementById('p-stats').innerText = `Tấn công: ${player.atk} | Giáp: ${player.def + (player.cruiseDefStacks || 0)} | Tốc: ${player.attackCooldown}s/đòn`;
+
+  // CẬP NHẬT HIỂN THỊ STACK CHÍ MẠNG (NẾU CÓ MANG THẺ CRIT)
+  const critBox = document.getElementById('crit-stack-box');
+  if (equippedCardIds.includes('crit')) {
+    critBox.style.display = 'block';
+    let currentCritRate = (player.critStacks * 0.5).toFixed(1);
+    document.getElementById('crit-stack-txt').innerText = player.critStacks;
+    document.getElementById('crit-rate-txt').innerText = currentCritRate + '%';
+  } else {
+    critBox.style.display = 'none';
+  }
 
   const pBadge = document.getElementById('p-silence-badge');
   if (player.silenceTimer > 0) {
