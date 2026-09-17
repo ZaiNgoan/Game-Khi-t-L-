@@ -3,7 +3,7 @@ const CARDS = {
     id: 'archer',
     name: 'Thẻ Xạ Thủ Nguyễn Hoa',
     enemyName: 'Decidueye Nguyễn Hoa',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/724.gif',
+    imgUrl: 'ASSET/mèo con.gif',
     desc: '+5 Tấn công. Mỗi đòn thứ 3 gây thêm 4% HP tối đa mục tiêu (ST Chuẩn).',
     atkBonus: 5,
     unlocked: false
