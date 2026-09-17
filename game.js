@@ -952,6 +952,33 @@ function resetGame() {
     location.reload();
   }
 }
+function toggleEquip(cardId) {
+  // THÊM ĐOẠN NÀY ĐỂ CHẶN GIAN LẬN ĐỔI THẺ TRONG TRẬN ĐẤU
+  if (isFighting) {
+    alert("⚠️ Không thể tháo/lắp thẻ khi trận đấu đang diễn ra!");
+    return;
+  }
+
+  if (!unlockedCards.includes(cardId)) return;
+  const idx = equippedCardIds.indexOf(cardId);
+  const maxLimit = getMaxEquipLimit();
+  
+  if (idx > -1) {
+    equippedCardIds.splice(idx, 1);
+    log(`Đã gỡ thẻ: ${CARDS[cardId].name}`, 'log-sys');
+  } else {
+    if (equippedCardIds.length >= maxLimit) {
+      alert(`Với đối thủ này, bạn chỉ được phép trang bị tối đa ${maxLimit} thẻ! Hãy gỡ bớt thẻ trước.`);
+      return;
+    }
+    equippedCardIds.push(cardId);
+    log(`Đã trang bị: ${CARDS[cardId].name}`, 'log-sys');
+  }
+  calculatePlayerStats(true);
+  saveData();
+  renderCards();
+  updateUI();
+}
 
 calculatePlayerStats(true);
 renderCards();
