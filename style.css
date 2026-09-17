@@ -2,13 +2,11 @@
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 20px; }
 .container { max-width: 920px; margin: 0 auto; }
 h1 { text-align: center; color: #38bdf8; margin-bottom: 16px; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
-
 .arena { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
 .card { background: #161f30; padding: 16px; border-radius: 12px; border: 1px solid #283548; box-shadow: 0 8px 16px rgba(0,0,0,0.4); text-align: center; position: relative; }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .card-title { font-size: 17px; font-weight: bold; color: #e2e8f0; }
 .badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; background: #2563eb; }
-
 .avatar-wrap { 
   width: 130px; height: 130px; margin: 0 auto 10px auto; 
   display: flex; align-items: center; justify-content: center; 
@@ -16,7 +14,6 @@ h1 { text-align: center; color: #38bdf8; margin-bottom: 16px; font-size: 24px; t
   border-radius: 12px; border: 2px solid #38bdf8; overflow: hidden; position: relative;
 }
 .avatar-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
 .battle-actions { text-align: center; margin-bottom: 12px; }
 .btn-start {
   width: 100%; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px;
@@ -25,7 +22,6 @@ h1 { text-align: center; color: #38bdf8; margin-bottom: 16px; font-size: 24px; t
 }
 .btn-start:hover:not(:disabled) { transform: scale(1.01); opacity: 0.95; }
 .btn-start:disabled { background: #334155 !important; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
-
 .shake-hit { animation: shake 0.25s cubic-bezier(.36,.07,.19,.97) both; filter: brightness(1.6) drop-shadow(0 0 10px #ef4444) !important; }
 @keyframes shake {
   10%, 90% { transform: translate3d(-3px, 0, 0); }
@@ -33,8 +29,6 @@ h1 { text-align: center; color: #38bdf8; margin-bottom: 16px; font-size: 24px; t
   30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
   40%, 60% { transform: translate3d(6px, 0, 0); }
 }
-
-/* Số sát thương bay lên */
 .dmg-pop {
   position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%);
   font-weight: 900; font-size: 22px; pointer-events: none; z-index: 10;
@@ -49,8 +43,6 @@ h1 { text-align: center; color: #38bdf8; margin-bottom: 16px; font-size: 24px; t
 .dmg-crit { color: #facc15; font-size: 26px; text-shadow: 0 0 6px #ef4444; }
 .dmg-true { color: #f8fafc; text-shadow: 0 0 6px #38bdf8; }
 .dmg-heal { color: #4ade80; text-shadow: 0 0 5px #15803d; }
-
-/* Popup Text Kích hoạt Kỹ năng / Thẻ bài */
 .skill-banner {
   position: absolute; left: 50%; top: 20%; transform: translate(-50%, -50%);
   background: rgba(15, 23, 42, 0.9); border: 2px solid #f59e0b; padding: 4px 10px;
@@ -64,29 +56,24 @@ h1 { text-align: center; color: #38bdf8; margin-bottom: 16px; font-size: 24px; t
   80% { opacity: 1; transform: translate(-50%, -10px) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -20px) scale(0.9); }
 }
-
 .bar-wrap { background: #283548; height: 14px; border-radius: 7px; overflow: hidden; margin: 8px 0; }
 .bar-fill { height: 100%; transition: width 0.2s ease-in-out; }
 .hp-player { background: #22c55e; }
 .hp-enemy { background: #ef4444; }
-
 .stats { font-size: 13px; color: #94a3b8; line-height: 1.5; }
 .equipped-box { background: #0b0f19; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-top: 10px; text-align: left; font-size: 12px; min-height: 50px; }
 .equipped-tag { display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 2px 6px; border-radius: 4px; margin: 2px; font-size: 11px; }
-
 #combat-log { background: #050811; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; height: 140px; overflow-y: auto; font-family: monospace; font-size: 12px; color: #cbd5e1; margin-bottom: 16px; }
 .log-p { color: #38bdf8; }
 .log-e { color: #f87171; }
 .log-sys { color: #fbbf24; font-weight: bold; }
 .log-crit { color: #f43f5e; font-weight: bold; }
 .log-frenzy { color: #a855f7; font-weight: bold; }
-
 .controls { background: #161f30; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #283548; }
 .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 button { background: #2563eb; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
 button:hover { opacity: 0.9; }
 button:disabled { background: #475569 !important; cursor: not-allowed; }
-
 .roll-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 12px; }
 .roll-card { background: #0b0f19; border: 1px solid #283548; border-radius: 10px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
 .roll-card.active { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
@@ -94,21 +81,17 @@ button:disabled { background: #475569 !important; cursor: not-allowed; }
 .roll-card.locked { opacity: 0.4; filter: grayscale(1); }
 .roll-card h4 { margin: 0 0 6px 0; font-size: 13px; color: #f59e0b; }
 .roll-card p { font-size: 11px; color: #94a3b8; margin: 0 0 10px 0; min-height: 48px; text-align: left; line-height: 1.4; }
-
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
 .modal-box { background: #161f30; border: 2px solid #38bdf8; border-radius: 12px; padding: 20px; width: 90%; max-width: 500px; text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
 .gacha-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 260px; overflow-y: auto; margin: 16px 0; }
 .gacha-item { background: #0b0f19; border: 1px solid #334155; padding: 8px; border-radius: 8px; font-size: 12px; width: 135px; text-align: center; }
 .gacha-item.win { border-color: #f59e0b; background: #1e293b; font-weight: bold; color: #facc15; }
 .btn-close-modal { background: #10b981; padding: 10px 20px; font-size: 14px; border-radius: 6px; border: none; color: #fff; cursor: pointer; }
-/* BẢNG XẾP HẠNG PHÁ ĐẢO */
 .hall-of-fame { background: #161f30; border: 1px solid #f59e0b; border-radius: 12px; padding: 16px; margin-top: 20px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
 .hall-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; }
 .hall-table th { background: #0b0f19; padding: 10px; color: #f59e0b; border-bottom: 1px solid #334155; }
 .hall-table td { padding: 8px 10px; border-bottom: 1px solid #283548; color: #cbd5e1; }
 .hall-table tr:nth-child(even) { background: #0e1626; }
 .hall-rank { font-weight: bold; color: #38bdf8; }
-
-/* MODAL NHẬP TÊN CHIẾN THẮNG */
 .victory-modal-box { background: #161f30; border: 3px solid #f59e0b; border-radius: 12px; padding: 24px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(245, 158, 11, 0.6); }
 .victory-input { width: 80%; padding: 10px; border-radius: 6px; border: 1px solid #38bdf8; background: #0b0f19; color: #fff; font-size: 14px; margin: 15px 0; text-align: center; outline: none; }
