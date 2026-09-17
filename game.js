@@ -918,15 +918,15 @@ function updateUI() {
   document.getElementById('p-stats').innerText = `Tấn công: ${player.atk} | Giáp: ${player.def + (player.cruiseDefStacks || 0)} | Tốc: ${player.attackCooldown}s/đòn`;
 
   // CẬP NHẬT HIỂN THỊ STACK CHÍ MẠNG (NẾU CÓ MANG THẺ CRIT)
-  const critBox = document.getElementById('crit-stack-box');
-  if (equippedCardIds.includes('crit')) {
-    critBox.style.display = 'block';
-    let currentCritRate = (player.critStacks * 0.5).toFixed(1);
-    document.getElementById('crit-stack-txt').innerText = player.critStacks;
-    document.getElementById('crit-rate-txt').innerText = currentCritRate + '%';
-  } else {
-    critBox.style.display = 'none';
-  }
+ const critBox = document.getElementById('crit-stack-box');
+if (equippedCardIds.includes('crit')) {
+  critBox.style.display = 'block';
+  let currentCritRate = (player.critStacks * 0.5).toFixed(1);
+  document.getElementById('crit-stack-txt').innerText = player.critStacks;
+  document.getElementById('crit-rate-txt').innerText = currentCritRate + '%';
+} else {
+  critBox.style.display = 'none';
+}
 
   const pBadge = document.getElementById('p-silence-badge');
   if (player.silenceTimer > 0) {
