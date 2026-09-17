@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đấu Trường Thẻ Bài Pokémon</title>
+  <title>Đấu Trường Thẻ Bài Bạn Bè</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
-    .container { max-width: 800px; margin: 0 auto; }
+    .container { max-width: 850px; margin: 0 auto; }
     h1 { text-align: center; color: #38bdf8; margin-bottom: 20px; font-size: 24px; }
     
     .arena { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .card { background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
+    .card { background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); text-align: center; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .card-title { font-size: 18px; font-weight: bold; color: #e2e8f0; }
     .badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; background: #3b82f6; }
+    
+    /* Vòng tròn ảnh đại diện */
+    .avatar-wrap { width: 110px; height: 110px; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; background: #0b1120; border-radius: 50%; border: 2px solid #38bdf8; overflow: hidden; }
+    .avatar-wrap img { max-width: 90px; max-height: 90px; object-fit: contain; }
     
     .bar-wrap { background: #334155; height: 14px; border-radius: 7px; overflow: hidden; margin: 8px 0; }
     .bar-fill { height: 100%; transition: width 0.2s ease-in-out; }
@@ -22,7 +26,7 @@
     .hp-enemy { background: #ef4444; }
     
     .stats { font-size: 13px; color: #94a3b8; line-height: 1.6; }
-    .equipped-card { background: #0f172a; border-left: 3px solid #f59e0b; padding: 6px 10px; margin-top: 10px; font-size: 12px; border-radius: 4px; }
+    .equipped-card { background: #0f172a; border-left: 3px solid #f59e0b; padding: 6px 10px; margin-top: 10px; font-size: 12px; border-radius: 4px; text-align: left; }
     
     .controls { background: #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid #334155; }
     .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
@@ -30,11 +34,13 @@
     button:hover { background: #1d4ed8; }
     button:disabled { background: #475569; cursor: not-allowed; }
     
-    .roll-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 10px; }
-    .roll-card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; }
-    .roll-card.locked { opacity: 0.5; filter: grayscale(1); }
+    /* Khu vực hiển thị thẻ Roll */
+    .roll-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
+    .roll-card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+    .roll-card img { width: 65px; height: 65px; margin: 0 auto 6px auto; object-fit: contain; }
+    .roll-card.locked { opacity: 0.45; filter: grayscale(1); }
     .roll-card h4 { margin: 0 0 6px 0; font-size: 14px; color: #f59e0b; }
-    .roll-card p { font-size: 11px; color: #94a3b8; margin: 0 0 8px 0; min-height: 38px; }
+    .roll-card p { font-size: 11px; color: #94a3b8; margin: 0 0 10px 0; min-height: 42px; text-align: left; }
     
     #combat-log { background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; height: 160px; overflow-y: auto; font-family: monospace; font-size: 12px; color: #cbd5e1; }
     .log-p { color: #38bdf8; }
@@ -44,7 +50,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>⚔️ ĐẤU TRƯỜNG THẺ BÀI POKÉMON</h1>
+    <h1>⚔️ ĐẤU TRƯỜNG THẺ BÀI CHIẾN THUẬT</h1>
 
     <div class="arena">
       <!-- Nhân vật chính -->
@@ -52,6 +58,9 @@
         <div class="card-header">
           <span class="card-title">Nhân Vật Chính</span>
           <span class="badge">Người chơi</span>
+        </div>
+        <div class="avatar-wrap">
+          <img id="p-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif" alt="Player">
         </div>
         <div class="bar-wrap"><div id="p-hp-bar" class="bar-fill hp-player" style="width: 100%;"></div></div>
         <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 100 / 100</div>
@@ -65,6 +74,9 @@
           <span class="card-title" id="e-name">Chưa chọn đối thủ</span>
           <span class="badge" id="e-status">Chờ đấu</span>
         </div>
+        <div class="avatar-wrap">
+          <img id="e-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Enemy">
+        </div>
         <div class="bar-wrap"><div id="e-hp-bar" class="bar-fill hp-enemy" style="width: 100%;"></div></div>
         <div id="e-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 0 / 0</div>
         <div class="stats" id="e-stats">Tấn công: 0 | Phòng thủ: 0 | Tốc đánh: 2s/đòn</div>
@@ -74,61 +86,64 @@
 
     <!-- Khu vực Khiêu chiến và Roll thẻ -->
     <div class="controls">
-      <div style="font-weight: bold; margin-bottom: 8px;">1. Chọn Pokémon khiêu chiến để mở khóa Roll:</div>
+      <div style="font-weight: bold; margin-bottom: 8px;">1. Khiêu chiến để mở khóa Roll thẻ:</div>
       <div class="btn-group">
-        <button onclick="startBattle('archer')">Đấu Decidueye (Xạ Thủ)</button>
-        <button onclick="startBattle('mage')">Đấu Gardevoir (Thuật Sư)</button>
-        <button onclick="startBattle('tank')">Đấu Blastoise (Thủ)</button>
-        <button onclick="startBattle('phoenix')">Đấu Ho-Oh (Ngọn Lửa PH)</button>
+        <button onclick="startBattle('archer')">🏹 Đấu Nguyễn Hoa</button>
+        <button onclick="startBattle('mage')">🔮 Đấu Đức Lương</button>
+        <button onclick="startBattle('tank')">🛡️ Đấu Dương Võ</button>
+        <button onclick="startBattle('phoenix')">🔥 Đấu Hữu Phai</button>
       </div>
 
       <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">2. Khu vực Roll thẻ bài (Đánh bại mới mở khóa):</div>
-      <div class="roll-section" id="roll-pool">
-        <!-- Được tạo tự động bởi JavaScript -->
-      </div>
+      <div class="roll-section" id="roll-pool"></div>
     </div>
 
     <div id="combat-log"></div>
   </div>
 
   <script>
-    // 1. DỮ LIỆU THẺ BÀI RARE
+    // ==========================================
+    // THÔNG TIN THẺ VÀ LINK HÌNH ẢNH
+    // ==========================================
     const CARDS = {
       archer: {
         id: 'archer',
-        name: 'Thẻ Xạ Thủ',
-        enemyName: 'Decidueye',
-        desc: '+5 Tấn công. Mỗi đòn thứ 3 gây thêm 4% HP tối đa mục tiêu (Chuẩn).',
+        name: 'Thẻ Xạ Thủ Nguyễn Hoa',
+        enemyName: 'Decidueye Nguyễn Hoa',
+        imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/724.gif',
+        desc: 'Khi trang bị sẽ +5 Tấn công. Mỗi đòn thứ 3 gây thêm 4% HP tối đa mục tiêu (st Chuẩn).',
         atkBonus: 5,
         unlocked: false
       },
       mage: {
         id: 'mage',
-        name: 'Thẻ Thuật Sư',
-        enemyName: 'Gardevoir',
+        name: 'Thẻ Thuật Sư Đức Lương',
+        enemyName: 'Gardevoir Đức Lương',
+        imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/282.gif',
         desc: 'Mỗi 1s hồi 7 máu, nhịp hồi thứ 5 hồi x2 (14 máu).',
         atkBonus: 0,
         unlocked: false
       },
       tank: {
         id: 'tank',
-        name: 'Thẻ Thủ',
-        enemyName: 'Blastoise',
-        desc: '30% Block đòn đánh, phản lại 50% sát thương đó.',
+        name: 'Thẻ Phòng Ngự Dương Võ',
+        enemyName: 'Blastoise Dương Võ',
+        imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/9.gif',
+        desc: '30% Block đòn đánh, phản lại 50% sát thương đó lên nguồn gây sát thương.',
         atkBonus: 0,
         unlocked: false
       },
       phoenix: {
         id: 'phoenix',
-        name: 'Thẻ Ngọn Lửa Phượng Hoàng',
-        enemyName: 'Ho-Oh',
-        desc: 'Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (Sát thương chuẩn).',
+        name: 'Thẻ Ngọn Lửa Hữu Phai',
+        enemyName: 'Ho-Oh Hữu Phai',
+        imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/250.gif',
+        desc: 'Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (Sat thương chuẩn).',
         atkBonus: 0,
         unlocked: false
       }
     };
 
-    // 2. THÔNG SỐ NHÂN VẬT GỐC
     let player = {
       name: "Nhân Vật Chính",
       maxHp: 100,
@@ -152,19 +167,16 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    // Tính toán sát thương vật lý qua giáp
     function calcDamage(atk, def) {
       const red = 100 / (100 + def);
       return Math.max(1, Math.round(atk * red));
     }
 
-    // 3. KHỞI TẠO ĐỐI THỦ VÀ TRẬN ĐẤU
     function startBattle(cardId) {
       if (battleTimer) clearInterval(battleTimer);
       tick = 0;
       document.getElementById('combat-log').innerHTML = '';
 
-      // Reset chỉ số người chơi
       player.hp = player.maxHp;
       player.atk = player.baseAtk + (player.card ? player.card.atkBonus : 0);
       player.attackCount = 0;
@@ -174,6 +186,7 @@
       enemy = {
         id: cardId,
         name: baseCard.enemyName,
+        imgUrl: baseCard.imgUrl,
         maxHp: 120,
         hp: 120,
         atk: 6 + baseCard.atkBonus,
@@ -183,30 +196,25 @@
         healCount: 0
       };
 
+      document.getElementById('e-img').src = enemy.imgUrl;
       log(`⚔️ Bắt đầu khiêu chiến với <b>${enemy.name}</b>!`, 'log-sys');
       updateUI();
 
-      // Vòng lặp chiến đấu chạy mỗi 1 giây (1 tick)
       battleTimer = setInterval(battleTick, 1000);
     }
 
-    // 4. LOGIC MỖI GIÂY (COMBAT TICK)
     function battleTick() {
       tick++;
 
-      // --- HIỆU ỨNG THỜI GIAN (HỒI MÁU & THIÊU ĐỐT) MỖI 1 GIÂY ---
       applyPassivePerSecond(player, enemy, 'log-p');
       applyPassivePerSecond(enemy, player, 'log-e');
 
       if (checkCombatEnd()) return;
 
-      // --- TỐC ĐỘ ĐÁNH 2s / 1 ĐÒN (Đánh vào các giây chẵn: 2, 4, 6...) ---
       if (tick % 2 === 0) {
-        // Người chơi đánh đối thủ
         performAttack(player, enemy, 'Bạn', 'log-p');
         if (checkCombatEnd()) return;
 
-        // Đối thủ đánh trả người chơi
         performAttack(enemy, player, enemy.name, 'log-e');
         if (checkCombatEnd()) return;
       }
@@ -214,65 +222,57 @@
       updateUI();
     }
 
-    // Xử lý hiệu ứng mỗi giây: Thuật Sư & Phượng Hoàng
     function applyPassivePerSecond(source, target, logClass) {
       if (!source.card) return;
 
-      // 1. Thẻ Thuật Sư: hồi máu mỗi giây, nhịp thứ 5 hồi x2 (14 máu)
       if (source.card.id === 'mage') {
         source.healCount++;
         let healAmount = (source.healCount % 5 === 0) ? 14 : 7;
         let oldHp = source.hp;
         source.hp = Math.min(source.maxHp, source.hp + healAmount);
-        log(`✨ [${source.name}] kích hoạt Thuật Sư hồi <b>+${source.hp - oldHp} HP</b> (${source.healCount % 5 === 0 ? 'Hồi x2' : 'Hồi 7'}).`, logClass);
+        log(`✨ [${source.name}] hồi <b>+${source.hp - oldHp} HP</b> (${source.healCount % 5 === 0 ? 'Hồi x2' : 'Hồi 7'}).`, logClass);
       }
 
-      // 2. Thẻ Ngọn Lửa Phượng Hoàng: Thiêu đốt 0.3% máu tối đa mỗi giây (Sát thương chuẩn)
       if (source.card.id === 'phoenix') {
         let burnDmg = Math.max(1, Math.round(target.maxHp * 0.003));
         target.hp = Math.max(0, target.hp - burnDmg);
-        log(`🔥 [${source.name}] ngọn lửa thiêu đốt đối phương chịu <b>${burnDmg}</b> ST chuẩn.`, logClass);
+        log(`🔥 [${source.name}] thiêu đốt đối thủ mất <b>${burnDmg}</b> ST chuẩn.`, logClass);
       }
     }
 
-    // Xử lý đòn đánh thường: Xạ Thủ & Thẻ Thủ
     function performAttack(attacker, defender, attackerName, logClass) {
       attacker.attackCount++;
       let rawDmg = calcDamage(attacker.atk, defender.def);
 
-      // Thẻ Thủ: 30% Block toàn bộ và phản lại 50% sát thương
       if (defender.card && defender.card.id === 'tank') {
         if (Math.random() < 0.3) {
           let reflectDmg = Math.round(rawDmg * 0.5);
           attacker.hp = Math.max(0, attacker.hp - reflectDmg);
-          log(`🛡️ [${defender.name}] <b>BLOCK thành công</b> đòn đánh! Phản lại <b>${reflectDmg}</b> sát thương lên ${attackerName}!`, 'log-sys');
+          log(`🛡️ [${defender.name}] <b>BLOCK thành công!</b> Phản lại <b>${reflectDmg}</b> sát thương lên ${attackerName}!`, 'log-sys');
           return;
         }
       }
 
-      // Gây sát thương cơ bản
       defender.hp = Math.max(0, defender.hp - rawDmg);
       log(`🗡️ ${attackerName} tấn công gây <b>${rawDmg}</b> sát thương.`, logClass);
 
-      // Thẻ Xạ Thủ: Đòn đánh thứ 3 gây thêm 4% HP tối đa thành ST Chuẩn
       if (attacker.card && attacker.card.id === 'archer' && attacker.attackCount % 3 === 0) {
         let trueDmg = Math.max(1, Math.round(defender.maxHp * 0.04));
         defender.hp = Math.max(0, defender.hp - trueDmg);
-        log(`🎯 [${attacker.name}] kích hoạt Xạ Thủ (Đòn 3): Bắn xuyên giáp gây <b>+${trueDmg}</b> ST Chuẩn!`, 'log-sys');
+        log(`🎯 [${attacker.name}] Xạ Thủ (Đòn 3): Gây thêm <b>+${trueDmg}</b> ST Chuẩn!`, 'log-sys');
       }
     }
 
-    // Kiểm tra kết thúc trận
     function checkCombatEnd() {
       if (player.hp <= 0) {
         clearInterval(battleTimer);
-        log("💀 <b>Bạn đã thất bại! Hãy thử lại hoặc đổi chiến thuật.</b>", 'log-e');
+        log("💀 <b>Bạn đã thất bại! Hãy thử lại.</b>", 'log-e');
         updateUI();
         return true;
       }
       if (enemy && enemy.hp <= 0) {
         clearInterval(battleTimer);
-        log(`🎉 <b>Bạn đã chiến thắng ${enemy.name}! Đã mở khóa Roll ${enemy.card.name}!</b>`, 'log-sys');
+        log(`🎉 <b>Bạn đã đánh bại ${enemy.name}! Đã mở khóa Roll ${enemy.card.name}!</b>`, 'log-sys');
         CARDS[enemy.id].unlocked = true;
         renderRollPool();
         updateUI();
@@ -281,14 +281,13 @@
       return false;
     }
 
-    // 5. CƠ CHẾ ROLL VÀ TRANG BỊ THẺ
     function rollAndEquip(cardId) {
       const card = CARDS[cardId];
       if (!card.unlocked) return;
 
       player.card = card;
       player.atk = player.baseAtk + card.atkBonus;
-      log(`🎲 Đã Roll & Trang bị thành công: <b>${card.name}</b>!`, 'log-sys');
+      log(`🎲 Đã trang bị thành công: <b>${card.name}</b>!`, 'log-sys');
       updateUI();
     }
 
@@ -300,10 +299,13 @@
         const cardDiv = document.createElement('div');
         cardDiv.className = `roll-card ${c.unlocked ? '' : 'locked'}`;
         cardDiv.innerHTML = `
-          <h4>${c.name}</h4>
-          <p>${c.desc}</p>
+          <div>
+            <img src="${c.imgUrl}" alt="${c.name}">
+            <h4>${c.name}</h4>
+            <p>${c.desc}</p>
+          </div>
           <button ${c.unlocked ? '' : 'disabled'} onclick="rollAndEquip('${c.id}')">
-            ${c.unlocked ? 'Trang Bị Thẻ' : 'Khóa (Cần thắng)'}
+            ${c.unlocked ? 'Trang Bị Thẻ' : 'Khóa'}
           </button>
         `;
         pool.appendChild(cardDiv);
@@ -311,13 +313,11 @@
     }
 
     function updateUI() {
-      // Cập nhật người chơi
       document.getElementById('p-hp-bar').style.width = (player.hp / player.maxHp * 100) + '%';
       document.getElementById('p-hp-txt').innerText = `HP: ${player.hp} / ${player.maxHp}`;
       document.getElementById('p-stats').innerText = `Tấn công: ${player.atk} | Phòng thủ: ${player.def} | Tốc đánh: 2s/đòn`;
       document.getElementById('p-equipped').innerText = `Thẻ trang bị: ${player.card ? player.card.name : 'Chưa có'}`;
 
-      // Cập nhật đối thủ
       if (enemy) {
         document.getElementById('e-name').innerText = enemy.name;
         document.getElementById('e-status').innerText = enemy.hp > 0 ? 'Đang đấu' : 'Đã gục';
@@ -328,7 +328,6 @@
       }
     }
 
-    // Khởi tạo ban đầu
     renderRollPool();
     updateUI();
   </script>
