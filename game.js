@@ -12,7 +12,7 @@ const CARDS = {
     id: 'mage',
     name: 'Thẻ Thuật Sư Đức Lương',
     enemyName: 'Gardevoir Đức Lương',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/282.gif',
+    imgUrl: 'asset/Thuật Sư.gif',
     desc: 'Mỗi 1s hồi 7 máu, lần hồi thứ 5 hồi gấp đôi (14 máu).',
     atkBonus: 0,
     unlocked: false
@@ -21,7 +21,7 @@ const CARDS = {
     id: 'tank',
     name: 'Thẻ Phòng Ngự Dương Võ',
     enemyName: 'Blastoise Dương Võ',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/9.gif',
+    imgUrl: 'ASSET/phòng thủ.gif',
     desc: '30% Block đòn đánh, phản lại 50% sát thương đó.',
     atkBonus: 0,
     unlocked: false
@@ -30,7 +30,7 @@ const CARDS = {
     id: 'phoenix',
     name: 'Thẻ Ngọn Lửa Hữu Phai',
     enemyName: 'Ho-Oh Hữu Phai',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/250.gif',
+    imgUrl: 'ASSET/main.gif',
     desc: 'Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (ST chuẩn).',
     atkBonus: 0,
     unlocked: false
@@ -39,7 +39,7 @@ const CARDS = {
     id: 'crit',
     name: 'Thẻ Chí Mạng Đăng Khang',
     enemyName: 'Scizor Đăng Khang',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/212.gif',
+    imgUrl: 'ASSET/bạo kích.gif',
     desc: 'Mỗi 1s tích 1 tầng (+0.5% crit, max 50 tầng). Đòn chí mạng gây x3 sát thương.',
     atkBonus: 0,
     unlocked: false
@@ -48,7 +48,7 @@ const CARDS = {
     id: 'frenzy',
     name: 'Thẻ Tốc Đánh Phạm Đạt',
     enemyName: 'Greninja Phạm Đạt',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/658.gif',
+    imgUrl: 'ASSET/tốc đánh.gif',
     desc: 'Khi tung đòn có 12% đánh thêm 1 lần nữa và tăng tốc đánh lên x2 (1s/đòn) trong 4s.',
     atkBonus: 0,
     unlocked: false
