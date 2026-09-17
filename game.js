@@ -61,7 +61,7 @@ const CARDS = {
     name: 'Thẻ Ngọn Lửa Hữu Phai',
     enemyName: 'Ho-Oh Hữu Phai',
     tier: 'elite',
-    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/ho-oh.gif',
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/hooh.gif',
     desc: '+20 HP, +3 ATK. Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (ST chuẩn).',
     atkBonus: 3, hpBonus: 20, defBonus: 0
   },
