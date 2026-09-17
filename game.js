@@ -1,5 +1,5 @@
 // ==========================================
-// 1. TẤT CẢ THẺ BÀI TRONG GAME (12 THẺ)
+// 1. TẤT CẢ THẺ BÀI TRONG GAME (13 THẺ)
 // ==========================================
 const CARDS = {
   basic_atk: {
@@ -25,6 +25,15 @@ const CARDS = {
     imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/iron.png',
     desc: 'Tăng thêm 8 Giáp vào chỉ số gốc.',
     atkBonus: 0, hpBonus: 0, defBonus: 8
+  },
+  vippro: {
+    id: 'vippro',
+    name: 'Thẻ Tập Sự VIP Pro',
+    enemyName: 'Tập Sự VIP Pro',
+    tier: 'basic',
+    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png',
+    desc: '+250 HP, +30 ATK, +5 DEF. Tấn công/Bị đánh tích 1 điểm (max 8) xả 10 viên đạn (mỗi viên 15% ATK, hồi 16 HP, giảm 10 DEF địch 4s & choáng 1s).',
+    atkBonus: 30, hpBonus: 250, defBonus: 5
   },
   archer: {
     id: 'archer',
@@ -176,7 +185,20 @@ let player = {
   moraBonusAtk: 0,
   silenceTimer: 0,
   cruiseDefStacks: 0,
-  cruiseTriggered: false
+  cruiseTriggered: false,
+  vipProStacks: 0,
+  vipProStunTimer: 0,
+  vipProDefReduction: 0,
+  vipProDefTimer: 0
+};
+
+// Biến cho BATTLE REPORT
+let battleReport = {
+  totalDmgDealt: 0,
+  totalDmgTaken: 0,
+  totalHealed: 0,
+  skillsTriggeredCount: 0,
+  durationSeconds: 0
 };
 
 let enemy = null;
@@ -226,7 +248,7 @@ function calcDamage(atk, def) {
 }
 
 function getMaxEquipLimit() {
-  if (!enemy || enemy.id === 'training') return 3;
+  if (!enemy || enemy.id === 'training' || enemy.id === 'vippro') return 3;
   if (enemy.tier === 'elite') return 2;
   if (enemy.tier === 'final') return 5;
   return 3;
@@ -275,6 +297,17 @@ function selectEnemy(targetId) {
       rewardTickets: 1,
       imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png',
       maxHp: 60, hp: 60, atk: 4, def: 0, cards: [], attackCooldown: 3
+    };
+  } else if (targetId === 'vippro') {
+    enemy = {
+      id: 'vippro',
+      name: 'Tập Sự VIP Pro',
+      tier: 'basic',
+      rewardTickets: 2,
+      imgUrl: CARDS.vippro.imgUrl,
+      maxHp: 350, hp: 350, atk: 25, def: 5,
+      cards: ['vippro'],
+      attackCooldown: 2
     };
   } else if (targetId === 'mora') {
     enemy = {
@@ -392,6 +425,9 @@ function triggerStartBattle() {
   document.getElementById('combat-log').innerHTML = '';
   calculatePlayerStats(true);
 
+  // Reset battle report
+  battleReport = { totalDmgDealt: 0, totalDmgTaken: 0, totalHealed: 0, skillsTriggeredCount: 0, durationSeconds: 0 };
+
   player.attackCount = 0;
   player.healCount = 0;
   player.critStacks = 0;
@@ -403,6 +439,10 @@ function triggerStartBattle() {
   player.silenceTimer = 0;
   player.cruiseDefStacks = 0;
   player.cruiseTriggered = false;
+  player.vipProStacks = 0;
+  player.vipProStunTimer = 0;
+  player.vipProDefReduction = 0;
+  player.vipProDefTimer = 0;
 
   enemy.hp = enemy.maxHp;
   enemy.attackCount = 0;
@@ -430,6 +470,7 @@ function triggerStartBattle() {
 
 function battleTick() {
   tick++;
+  battleReport.durationSeconds = tick;
 
   if (player.silenceTimer > 0) {
     player.silenceTimer--;
@@ -443,6 +484,17 @@ function battleTick() {
     if (player.frenzyTimer === 0) {
       player.attackCooldown = 2;
       log("⏳ Bạn kết thúc trạng thái Tăng Tốc Đánh.", 'log-sys');
+    }
+  }
+
+  if (player.vipProStunTimer > 0) {
+    player.vipProStunTimer--;
+  }
+
+  if (player.vipProDefTimer > 0) {
+    player.vipProDefTimer--;
+    if (player.vipProDefTimer === 0) {
+      player.vipProDefReduction = 0;
     }
   }
 
@@ -463,6 +515,8 @@ function battleTick() {
     if (Math.random() < 0.05) {
       let cutDmg = Math.max(1, Math.round(enemy.hp * 0.5));
       enemy.hp = Math.max(0, enemy.hp - cutDmg);
+      battleReport.totalDmgDealt += cutDmg;
+      battleReport.skillsTriggeredCount++;
       showPopup('enemy', `-${cutDmg}`, 'dmg-true');
       showSkillBanner('player', '♟️ THAO TÚNG: -50% HP HIỆN TẠI!', '#be185d');
       log(`♟️ <b>[AYANOKOUJI NỘI TẠI]</b> Bạn kích hoạt thao túng gây <b>${cutDmg} HP</b> (50% HP hiện tại) của đối thủ!`, 'log-crit');
@@ -496,9 +550,14 @@ function battleTick() {
 
   if (checkCombatEnd()) return;
 
+  // LƯỢT ĐÁNH CỦA PLAYER
   if (tick % player.attackCooldown === 0) {
-    executeStrikeSeries(player, enemy, pActiveCards, 'player', 'enemy', 'Bạn', 'log-p');
-    if (checkCombatEnd()) return;
+    if (player.vipProStunTimer > 0) {
+      log("💤 Bạn bị choáng và không thể tấn công lượt này!", 'log-sys');
+    } else {
+      executeStrikeSeries(player, enemy, pActiveCards, 'player', 'enemy', 'Bạn', 'log-p');
+      if (checkCombatEnd()) return;
+    }
   }
 
   if (enemy.id === 'bles') {
@@ -507,6 +566,7 @@ function battleTick() {
       if (checkCombatEnd()) return;
     }
   } else {
+    // LƯỢT ĐÁNH CỦA ENEMY
     if (tick % enemy.attackCooldown === 0) {
       executeStrikeSeries(enemy, player, enemy.cards, 'enemy', 'player', enemy.name, 'log-e');
       if (checkCombatEnd()) return;
@@ -533,12 +593,10 @@ function applyCruisePassive(obj, opponent, cardIds, objType, objName, logCls) {
           if (opponent.hp <= 0) return;
           let realDamage = calcDamage(strikeDamage, opponent.def);
           opponent.hp = Math.max(0, opponent.hp - realDamage);
+          if (objType === 'player') battleReport.totalDmgDealt += realDamage;
           showPopup((objType === 'player' ? 'enemy' : 'player'), `-${realDamage}`, 'dmg-norm');
           log(`🌊 [Triều Cường Đòn ${i}/7] gây <b>${realDamage}</b> sát thương lên ${opponent.name}!`, logCls);
-          
-          // Phát âm thanh phóng gai liên tục của Triều Cường
           if (typeof playSpikeSound === 'function') playSpikeSound();
-
           updateUI();
           checkCombatEnd();
         }, i * 150);
@@ -553,11 +611,11 @@ function executeBlesUltimate() {
   let rawDmg = Math.round(currentAtk * 0.15);
   let realDmg = calcDamage(rawDmg, player.def);
   player.hp = Math.max(0, player.hp - realDmg);
+  battleReport.totalDmgTaken += realDmg;
   showPopup('player', `💥 -${realDmg}`, 'dmg-crit');
   showSkillBanner('enemy', '👑 TRẢM SÁT 15% SÁT THƯƠNG!', '#f59e0b');
   log(`👑 <b>[KHIẾT NGUYỄN]</b> Kích hoạt TRẢM SÁT gây <b>${realDmg}</b> sát thương lên Bạn!`, 'log-crit');
   
-  // Phát tiếng gầm của Rồng khi Final Boss tung tuyệt kỹ
   if (typeof playDragonRoarSound === 'function') playDragonRoarSound();
 
   if ((enemy.blesStacks || 0) < 15) {
@@ -574,16 +632,18 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     let heal = (source.healCount % 5 === 0) ? 14 : 7;
     let old = source.hp;
     source.hp = Math.min(source.maxHp, source.hp + heal);
-    showPopup(srcType, `+${source.hp - old}`, 'dmg-heal');
+    let actualHeal = source.hp - old;
+    if (srcType === 'player' && actualHeal > 0) battleReport.totalHealed += actualHeal;
+
+    showPopup(srcType, `+${actualHeal}`, 'dmg-heal');
     showSkillBanner(srcType, '✨ THUẬT SƯ HỒI MÁU!', '#4ade80');
-    log(`✨ [${source.name}] hồi <b>+${source.hp - old} HP</b>.`, logCls);
-    
-    // Phát âm thanh hồi máu leng keng
+    log(`✨ [${source.name}] hồi <b>+${actualHeal} HP</b>.`, logCls);
     if (typeof playHealSound === 'function') playHealSound();
   }
   if (cardIds.includes('phoenix')) {
     let burn = Math.max(1, Math.round(target.maxHp * 0.009));
     target.hp = Math.max(0, target.hp - burn);
+    if (srcType === 'player') battleReport.totalDmgDealt += burn;
     showPopup(tarType, `-${burn}`, 'dmg-true');
     showSkillBanner(tarType, '🔥 THIÊU ĐỐT!', '#fb923c');
     log(`🔥 [${source.name}] thiêu đốt đối thủ mất <b>${burn}</b> ST chuẩn.`, logCls);
@@ -595,6 +655,11 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
 }
 
 function executeStrikeSeries(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) {
+  // Kiểm tra kích hoạt thẻ VIP Pro của người chơi (Tấn công hoặc bị tấn công)
+  if (atkType === 'player' && cardIds.includes('vippro')) {
+    triggerVipProStack();
+  }
+
   strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls);
   if (defObj.hp <= 0 || atkObj.hp <= 0) return;
   if (cardIds.includes('frenzy') && Math.random() < 0.12) {
@@ -606,10 +671,62 @@ function executeStrikeSeries(atkObj, defObj, cardIds, atkType, defType, atkName,
   }
 }
 
+function triggerVipProStack() {
+  player.vipProStacks++;
+  battleReport.skillsTriggeredCount++;
+  if (player.vipProStacks >= 8) {
+    player.vipProStacks = 0; // Reset về 0
+    showSkillBanner('player', '🔫 VIP PRO: XẢ 10 VIÊN ĐẠN!', '#38bdf8');
+    log(`🔫 <b>[TẬP SỰ VIP PRO]</b> Tích đủ 8 điểm! Lập tức xả một loạt 10 viên đạn vào kẻ địch!`, 'log-crit');
+    if (typeof playVipProGunSound === 'function') playVipProGunSound();
+
+    let bulletAtk = Math.max(1, Math.round(player.atk * 0.15));
+    for (let i = 1; i <= 10; i++) {
+      setTimeout(() => {
+        if (enemy.hp <= 0) return;
+        let actualDef = Math.max(0, enemy.def - player.vipProDefReduction);
+        let realDmg = calcDamage(bulletAtk, actualDef);
+        enemy.hp = Math.max(0, enemy.hp - realDmg);
+        battleReport.totalDmgDealt += realDmg;
+
+        // Hồi 16 HP mỗi viên
+        let oldHp = player.hp;
+        player.hp = Math.min(player.maxHp, player.hp + 16);
+        let healed = player.hp - oldHp;
+        battleReport.totalHealed += healed;
+
+        showPopup('enemy', `-${realDmg}`, 'dmg-norm');
+        log(`🔫 [Đạn VIP Pro ${i}/10] Gây <b>${realDmg}</b> ST & hồi <b>+${healed} HP</b> cho bạn!`, 'log-p');
+        updateUI();
+        checkCombatEnd();
+      }, i * 100);
+    }
+
+    // Giảm DEF địch đi 10 trong 4s & Choáng 1s
+    player.vipProDefReduction = 10;
+    player.vipProDefTimer = 4;
+    enemy.vipProStunTimer = 1; // Choáng đối thủ 1s
+    showSkillBanner('enemy', '💥 GIẢM 10 DEF & CHOÁNG 1S!', '#f43f5e');
+    log(`💥 <b>[VIP PRO HIỆU ỨNG]</b> Kẻ địch bị giảm 10 Giáp trong 4s và bị Choáng 1s!`, 'log-crit');
+  }
+}
+
 function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) {
   atkObj.attackCount++;
+  
+  // Nếu đối thủ đánh mình mà mình mang thẻ VIP Pro -> cũng tích 1 điểm VIP Pro!
+  if (defObj === player && equippedCardIds.includes('vippro')) {
+    triggerVipProStack();
+  }
+
   let effectiveAtk = atkObj.atk + (atkObj.moraBonusAtk || 0);
   let effectiveDef = defObj.def + (defObj.cruiseDefStacks || 0);
+  
+  // Nếu đối thủ đang chịu hiệu ứng trừ Giáp từ VIP Pro
+  if (defObj === enemy && player.vipProDefReduction > 0) {
+    effectiveDef = Math.max(0, effectiveDef - player.vipProDefReduction);
+  }
+
   let raw = calcDamage(effectiveAtk, effectiveDef);
   let isCrit = false;
 
@@ -628,6 +745,7 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
   if (defCardIds.includes('tank') && Math.random() < 0.3) {
     let reflect = Math.round(raw * 0.5);
     atkObj.hp = Math.max(0, atkObj.hp - reflect);
+    if (atkType === 'player') battleReport.totalDmgTaken += reflect;
     showPopup(defType, `BLOCK!`, 'dmg-true');
     showPopup(atkType, `-${reflect}`, 'dmg-norm');
     showSkillBanner(defType, '🛡️ BLOCK & PHẢN ĐÒN!', '#facc15');
@@ -643,7 +761,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     showSkillBanner(defType, '🐍 MORA HẤP THỤ!', '#0d9488');
     log(`🐍 [${defObj.name}] kích hoạt Hấp Thụ hồi lại <b>+${healAmount} HP</b>.`, 'log-sys');
     
-    // Phát âm thanh hồi máu
     if (typeof playHealSound === 'function') playHealSound();
 
     if (defObj.moraHealCount % 2 === 0 && (defObj.moraBonusAtk || 0) < 96) {
@@ -682,6 +799,9 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
   }
 
   defObj.hp = Math.max(0, defObj.hp - raw);
+  if (atkType === 'player') battleReport.totalDmgDealt += raw;
+  if (defType === 'player') battleReport.totalDmgTaken += raw;
+
   if (isCrit) {
     showPopup(defType, `💥 -${raw}`, 'dmg-crit');
     showSkillBanner(defType, '💥 CHÍ MẠNG x3!', '#ef4444');
@@ -696,13 +816,12 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
   if (cardIds.includes('archer') && atkObj.attackCount % 3 === 0) {
     let trueDmg = Math.max(1, Math.round(defObj.maxHp * 0.04));
     defObj.hp = Math.max(0, defObj.hp - trueDmg);
+    if (atkType === 'player') battleReport.totalDmgDealt += trueDmg;
     setTimeout(() => {
       showPopup(defType, `🎯 -${trueDmg}`, 'dmg-true');
       showSkillBanner(defType, '🎯 NGUYỄN HOA XUYÊN GIÁP!', '#a855f7');
     }, 120);
     log(`🎯 [${atkObj.name}] Xạ Thủ: Bắn xuyên giáp <b>+${trueDmg}</b> ST Chuẩn!`, 'log-sys');
-    
-    // Phát âm thanh phóng gai / bắn
     if (typeof playSpikeSound === 'function') playSpikeSound();
   }
 }
@@ -725,6 +844,7 @@ function checkCombatEnd() {
     btnStart.disabled = false;
     btnStart.innerText = `⚔️ TÁI ĐẤU VỚI ${enemy.name.toUpperCase()}`;
     updateUI();
+    showBattleReportModal(false);
     return true;
   }
 
@@ -744,15 +864,37 @@ function checkCombatEnd() {
     btnStart.innerText = `⚔️ TÁI ĐẤU VỚI ${enemy.name.toUpperCase()}`;
     renderCards();
     updateUI();
+    showBattleReportModal(true);
 
     if (enemy.id === 'bles') {
       setTimeout(() => {
         document.getElementById('victory-modal').style.display = 'flex';
-      }, 800);
+      }, 1200);
     }
     return true;
   }
   return false;
+}
+
+// HIỂN THỊ BẢNG BATTLE REPORT
+function showBattleReportModal(isWin) {
+  const modal = document.getElementById('report-modal');
+  const content = document.getElementById('report-content');
+  content.innerHTML = `
+    <b>Trạng thái:</b> ${isWin ? '<span style="color: #4ade80;">CHIẾN THẮNG 🎉</span>' : '<span style="color: #ef4444;">THẤT BẠI 💀</span>'}<br>
+    <b>Đối thủ:</b> ${enemy.name}<br>
+    <b>Thời gian giao tranh:</b> ${battleReport.durationSeconds} giây<br>
+    <hr style="border-color: #334155; margin: 8px 0;">
+    ⚔️ <b>Tổng ST gây ra:</b> <span style="color: #38bdf8;">${battleReport.totalDmgDealt}</span><br>
+    🛡️ <b>Tổng ST phải nhận:</b> <span style="color: #f87171;">${battleReport.totalDmgTaken}</span><br>
+    ✨ <b>Tổng HP đã hồi:</b> <span style="color: #4ade80;">${battleReport.totalHealed}</span><br>
+    ⚡ <b>Số lần kích hoạt kỹ năng:</b> <span style="color: #f59e0b;">${battleReport.skillsTriggeredCount}</span>
+  `;
+  modal.style.display = 'flex';
+}
+
+function closeReportModal() {
+  document.getElementById('report-modal').style.display = 'none';
 }
 
 function submitVictoryName() {
@@ -917,16 +1059,25 @@ function updateUI() {
   document.getElementById('p-hp-txt').innerText = `HP: ${player.hp} / ${player.maxHp}`;
   document.getElementById('p-stats').innerText = `Tấn công: ${player.atk} | Giáp: ${player.def + (player.cruiseDefStacks || 0)} | Tốc: ${player.attackCooldown}s/đòn`;
 
-  // CẬP NHẬT HIỂN THỊ STACK CHÍ MẠNG (NẾU CÓ MANG THẺ CRIT)
- const critBox = document.getElementById('crit-stack-box');
-if (equippedCardIds.includes('crit')) {
-  critBox.style.display = 'block';
-  let currentCritRate = (player.critStacks * 0.5).toFixed(1);
-  document.getElementById('crit-stack-txt').innerText = player.critStacks;
-  document.getElementById('crit-rate-txt').innerText = currentCritRate + '%';
-} else {
-  critBox.style.display = 'none';
-}
+  // Hiển thị Stack Crit
+  const critBox = document.getElementById('crit-stack-box');
+  if (equippedCardIds.includes('crit')) {
+    critBox.style.display = 'block';
+    let currentCritRate = (player.critStacks * 0.5).toFixed(1);
+    document.getElementById('crit-stack-txt').innerText = player.critStacks;
+    document.getElementById('crit-rate-txt').innerText = currentCritRate + '%';
+  } else {
+    critBox.style.display = 'none';
+  }
+
+  // Hiển thị Stack VIP Pro
+  const vipBox = document.getElementById('vippro-stack-box');
+  if (equippedCardIds.includes('vippro')) {
+    vipBox.style.display = 'block';
+    document.getElementById('vippro-stack-txt').innerText = player.vipProStacks;
+  } else {
+    vipBox.style.display = 'none';
+  }
 
   const pBadge = document.getElementById('p-silence-badge');
   if (player.silenceTimer > 0) {
@@ -973,7 +1124,9 @@ if (equippedCardIds.includes('crit')) {
     }
 
     let enemyDefText = `${enemy.def}`;
-    if (enemy.id === 'cruise') {
+    if (enemy.id === 'vippro' && player.vipProDefReduction > 0) {
+      enemyDefText = `${Math.max(0, enemy.def - player.vipProDefReduction)} (Đã bị trừ ${player.vipProDefReduction})`;
+    } else if (enemy.id === 'cruise') {
       enemyDefText = `${enemy.def + (enemy.cruiseDefStacks || 0)} (+${enemy.cruiseDefStacks || 0}/15 DEF)`;
     }
 
