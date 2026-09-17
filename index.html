@@ -19,14 +19,14 @@
           <span class="badge" id="p-silence-badge" style="background:#2563eb;">Người chơi</span>
         </div>
         <div class="avatar-wrap">
-          <img id="p-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif" alt="Player">
+          <img id="p-img" src="https://play.pokemonshowdown.com/sprites/ani/pikachu.gif" alt="Player">
         </div>
         <div class="bar-wrap"><div id="p-hp-bar" class="bar-fill hp-player" style="width: 100%;"></div></div>
         <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 100 / 100</div>
         <div class="stats" id="p-stats">Tấn công: 5 | Giáp: 5 | Tốc: 2s/đòn</div>
         <div class="equipped-box">
           <div style="font-weight: bold; font-size: 12px; margin-bottom: 4px;">
-            Thẻ đang mang: <span id="p-equip-limit-txt" style="color:#f59e0b;">(Chọn đối thủ để xác định số thẻ)</span>
+            Thẻ đang mang: <span id="p-equip-limit-txt" style="color:#f59e0b;">(Chọn đối thủ để xác định)</span>
           </div>
           <div id="p-equipped-list">Chưa trang bị thẻ nào</div>
         </div>
@@ -120,14 +120,14 @@
       </div>
       <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Phải roll trúng thẻ mới có thể trang bị!</div>
 
-      <!-- BỘ LỌC THẺ BÀI -->
+      <!-- THANH TAB LỌC THẺ -->
       <div style="margin-top: 16px;">
         <div style="font-weight: bold; margin-bottom: 8px;">Kho thẻ bài:</div>
         <div class="filter-tabs">
-          <button class="tab-btn active" onclick="setCardFilter('all', this)">🌟 Tất Cả</button>
-          <button class="tab-btn" onclick="setCardFilter('basic', this)">🟢 Mặc Định</button>
-          <button class="tab-btn" onclick="setCardFilter('elite', this)">🔵 Boss Elite</button>
-          <button class="tab-btn" onclick="setCardFilter('super', this)">🟣 Siêu Boss & Final</button>
+          <button class="tab-btn active" onclick="setCardFilter('all', this)">🌟 Tất Cả (11)</button>
+          <button class="tab-btn" onclick="setCardFilter('basic', this)">🟢 Mặc Định (3)</button>
+          <button class="tab-btn" onclick="setCardFilter('elite', this)">🔵 Boss Elite (7)</button>
+          <button class="tab-btn" onclick="setCardFilter('super', this)">🟣 Siêu Boss & Final (4)</button>
         </div>
       </div>
 
@@ -135,7 +135,7 @@
     </div>
   </div>
 
-  <!-- POPUP GACHA -->
+  <!-- MODAL POPUP KẾT QUẢ GACHA -->
   <div id="gacha-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 id="gacha-title">🎉 KẾT QUẢ ROLL</h3>
