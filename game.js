@@ -1,5 +1,7 @@
 // ==========================================
 // 1. DỮ LIỆU CÁC THẺ BÀI
+// 👉 Lưu ý: Nếu ảnh bạn up nằm trong thư mục nào thì chỉnh imgUrl đúng như vậy.
+// Ví dụ: 'GAME GIẢ TƯỞNG/1a.gif' hoặc 'assets/1a.gif'
 // ==========================================
 const CARDS = {
   archer: {
@@ -53,11 +55,11 @@ const CARDS = {
 };
 
 // ==========================================
-// 2. HỆ THỐNG LƯU TRỮ VĨNH VIỄN (LOCALSTORAGE)
+// 2. LƯU TRỮ TRÊN TRÌNH DUYỆT (LOCALSTORAGE)
 // ==========================================
 let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
 let equippedCardIds = JSON.parse(localStorage.getItem('equippedCardIds')) || [];
-let rollTickets = parseInt(localStorage.getItem('rollTickets')) || 10; // Tặng sẵn 10 vé khởi đầu
+let rollTickets = (localStorage.getItem('rollTickets') !== null) ? parseInt(localStorage.getItem('rollTickets')) : 10;
 
 function saveData() {
   localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
@@ -65,7 +67,6 @@ function saveData() {
   localStorage.setItem('rollTickets', rollTickets);
 }
 
-// Thông số nhân vật chính (được tăng chỉ số ban đầu)
 let player = {
   name: "Nhân Vật Chính",
   maxHp: 150,
@@ -81,7 +82,9 @@ let player = {
 };
 
 let enemy = null;
+let selectedEnemyTarget = null;
 let battleTimer = null;
+let isFighting = false;
 let tick = 0;
 
 function showPopup(targetType, text, cls) {
@@ -114,28 +117,18 @@ function calcDamage(atk, def) {
 }
 
 // ==========================================
-// 3. CHIẾN ĐẤU & KHIÊU CHIẾN
+// 3. CHỌN ĐỐI THỦ & BẤM NÚT BẮT ĐẦU CHIẾN ĐẤU
 // ==========================================
-function startBattle(targetId) {
-  if (battleTimer) clearInterval(battleTimer);
-  tick = 0;
-  document.getElementById('combat-log').innerHTML = '';
+function selectEnemy(targetId) {
+  if (isFighting) {
+    if (!confirm("Trận đấu đang diễn ra, bạn có muốn hủy trận hiện tại để chọn đối thủ mới?")) return;
+    clearInterval(battleTimer);
+    isFighting = false;
+  }
 
-  // Tính tổng bonus công từ các thẻ trang bị
-  let totalBonusAtk = 0;
-  equippedCardIds.forEach(id => {
-    if (CARDS[id]) totalBonusAtk += CARDS[id].atkBonus;
-  });
+  selectedEnemyTarget = targetId;
+  const btnStart = document.getElementById('btn-start-battle');
 
-  player.hp = player.maxHp;
-  player.atk = player.baseAtk + totalBonusAtk;
-  player.attackCount = 0;
-  player.healCount = 0;
-  player.critStacks = 0;
-  player.frenzyTimer = 0;
-  player.attackCooldown = 2;
-
-  // Đối thủ: Bù nhìn tập luyện hoặc Pokémon
   if (targetId === 'training') {
     enemy = {
       id: 'training',
@@ -146,10 +139,6 @@ function startBattle(targetId) {
       atk: 4,
       def: 2,
       cards: [],
-      attackCount: 0,
-      healCount: 0,
-      critStacks: 0,
-      frenzyTimer: 0,
       attackCooldown: 3
     };
   } else {
@@ -163,16 +152,55 @@ function startBattle(targetId) {
       atk: 7 + baseCard.atkBonus,
       def: 5,
       cards: [targetId],
-      attackCount: 0,
-      healCount: 0,
-      critStacks: 0,
-      frenzyTimer: 0,
       attackCooldown: 2
     };
   }
 
+  document.getElementById('e-name').innerText = enemy.name;
+  document.getElementById('e-status').innerText = 'Đã chọn - Chờ lệnh đấu';
   document.getElementById('e-img').src = enemy.imgUrl;
-  log(`⚔️ Bắt đầu khiêu chiến với <b>${enemy.name}</b>!`, 'log-sys');
+  document.getElementById('e-hp-bar').style.width = '100%';
+  document.getElementById('e-hp-txt').innerText = `HP: ${enemy.hp} / ${enemy.maxHp}`;
+  document.getElementById('e-stats').innerText = `Tấn công: ${enemy.atk} | Giáp: ${enemy.def} | Tốc: ${enemy.attackCooldown}s/đòn`;
+  document.getElementById('e-equipped').innerText = (enemy.cards.length > 0) ? CARDS[enemy.cards[0]].name : 'Không';
+
+  btnStart.disabled = false;
+  btnStart.innerText = `⚔️ BẮT ĐẦU CHIẾN ĐẤU VỚI ${enemy.name.toUpperCase()}!`;
+  log(`🎯 Bạn đã chọn mục tiêu: <b>${enemy.name}</b>. Hãy nhấn nút đỏ bên trên để bắt đầu!`, 'log-sys');
+}
+
+function triggerStartBattle() {
+  if (!enemy || isFighting) return;
+
+  isFighting = true;
+  tick = 0;
+  document.getElementById('combat-log').innerHTML = '';
+
+  let totalBonusAtk = 0;
+  equippedCardIds.forEach(id => {
+    if (CARDS[id]) totalBonusAtk += CARDS[id].atkBonus;
+  });
+
+  player.hp = player.maxHp;
+  player.atk = player.baseAtk + totalBonusAtk;
+  player.attackCount = 0;
+  player.healCount = 0;
+  player.critStacks = 0;
+  player.frenzyTimer = 0;
+  player.attackCooldown = 2;
+
+  enemy.hp = enemy.maxHp;
+  enemy.attackCount = 0;
+  enemy.healCount = 0;
+  enemy.critStacks = 0;
+  enemy.frenzyTimer = 0;
+
+  document.getElementById('e-status').innerText = 'Đang giao tranh';
+  const btnStart = document.getElementById('btn-start-battle');
+  btnStart.disabled = true;
+  btnStart.innerText = `⚔️ ĐANG CHIẾN ĐẤU VỚI ${enemy.name.toUpperCase()}...`;
+
+  log(`🚨 <b>TRẬN ĐẤU BẮT ĐẦU!</b>`, 'log-sys');
   updateUI();
 
   battleTimer = setInterval(battleTick, 1000);
@@ -181,7 +209,6 @@ function startBattle(targetId) {
 function battleTick() {
   tick++;
 
-  // Xử lý đếm lùi Frenzy (Phạm Đạt)
   if (player.frenzyTimer > 0) {
     player.frenzyTimer--;
     if (player.frenzyTimer === 0) {
@@ -197,13 +224,11 @@ function battleTick() {
     }
   }
 
-  // Hiệu ứng mỗi giây
   applyPerSecond(player, enemy, equippedCardIds, 'player', 'enemy', 'log-p');
   applyPerSecond(enemy, player, enemy.cards, 'enemy', 'player', 'log-e');
 
   if (checkCombatEnd()) return;
 
-  // Lượt đánh
   if (tick % player.attackCooldown === 0) {
     executeStrikeSeries(player, enemy, equippedCardIds, 'player', 'enemy', 'Bạn', 'log-p');
     if (checkCombatEnd()) return;
@@ -218,7 +243,6 @@ function battleTick() {
 }
 
 function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
-  // Thẻ Thuật Sư
   if (cardIds.includes('mage')) {
     source.healCount++;
     let heal = (source.healCount % 5 === 0) ? 14 : 7;
@@ -228,7 +252,6 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     log(`✨ [${source.name}] hồi <b>+${source.hp - old} HP</b>.`, logCls);
   }
 
-  // Thẻ Phượng Hoàng
   if (cardIds.includes('phoenix')) {
     let burn = Math.max(1, Math.round(target.maxHp * 0.003));
     target.hp = Math.max(0, target.hp - burn);
@@ -236,7 +259,6 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     log(`🔥 [${source.name}] thiêu đốt đối thủ mất <b>${burn}</b> ST chuẩn.`, logCls);
   }
 
-  // Thẻ Chí Mạng
   if (cardIds.includes('crit') && source.critStacks < 50) {
     source.critStacks++;
   }
@@ -246,7 +268,6 @@ function executeStrikeSeries(atkObj, defObj, cardIds, atkType, defType, atkName,
   strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls);
   if (defObj.hp <= 0) return;
 
-  // Thẻ Tốc Đánh (12% đánh thêm)
   if (cardIds.includes('frenzy') && Math.random() < 0.12) {
     log(`⚡ <b>[${atkName}] KÍCH HOẠT TỐC ĐÁNH PHẠM ĐẠT!</b> Đánh thêm 1 đòn & tăng tốc 1s/đòn trong 4s!`, 'log-frenzy');
     atkObj.frenzyTimer = 4;
@@ -259,7 +280,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
   atkObj.attackCount++;
   let raw = calcDamage(atkObj.atk, defObj.def);
 
-  // Tính Chí mạng
   let isCrit = false;
   if (cardIds.includes('crit')) {
     let rate = (atkObj.critStacks * 0.5) / 100;
@@ -269,7 +289,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     }
   }
 
-  // Đối thủ có thẻ Thủ (30% block)
   const defCardIds = (defObj === player) ? equippedCardIds : defObj.cards;
   if (defCardIds.includes('tank') && Math.random() < 0.3) {
     let reflect = Math.round(raw * 0.5);
@@ -289,7 +308,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     log(`🗡️ ${atkName} gây <b>${raw}</b> sát thương.`, logCls);
   }
 
-  // Thẻ Xạ Thủ (Đòn 3 thêm 4% max HP)
   if (cardIds.includes('archer') && atkObj.attackCount % 3 === 0) {
     let trueDmg = Math.max(1, Math.round(defObj.maxHp * 0.04));
     defObj.hp = Math.max(0, defObj.hp - trueDmg);
@@ -299,17 +317,25 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
 }
 
 function checkCombatEnd() {
+  const btnStart = document.getElementById('btn-start-battle');
+
   if (player.hp <= 0) {
     clearInterval(battleTimer);
-    log("💀 <b>Bạn đã thất bại! Hãy thử đổi chiến thuật hoặc luyện tập thêm.</b>", 'log-e');
+    isFighting = false;
+    log("💀 <b>Bạn đã thất bại! Hãy trang bị thêm thẻ bài hoặc luyện tập thêm.</b>", 'log-e');
+    btnStart.disabled = false;
+    btnStart.innerText = `⚔️ TÁI ĐẤU VỚI ${enemy.name.toUpperCase()}`;
     updateUI();
     return true;
   }
   if (enemy && enemy.hp <= 0) {
     clearInterval(battleTimer);
+    isFighting = false;
     rollTickets += 10;
     saveData();
     log(`🎉 <b>Bạn đã đánh bại ${enemy.name}! Nhận được +10 vé Roll thẻ bài!</b>`, 'log-sys');
+    btnStart.disabled = false;
+    btnStart.innerText = `⚔️ TÁI ĐẤU VỚI ${enemy.name.toUpperCase()}`;
     updateUI();
     return true;
   }
@@ -317,42 +343,54 @@ function checkCombatEnd() {
 }
 
 // ==========================================
-// 4. CƠ CHẾ GACHA ROLL VÀ TRANG BỊ 3 THẺ
+// 4. ROLL GACHA & HIỂN THỊ POPUP
 // ==========================================
 function rollCard(times) {
   if (rollTickets < times) {
-    alert("Bạn không đủ vé Roll! Hãy khiêu chiến thắng đối thủ để nhận thêm vé.");
+    alert(`Bạn cần có ít nhất ${times} vé để quay! Hãy khiêu chiến thắng đối thủ để nhận thêm vé.`);
     return;
   }
 
   rollTickets -= times;
   const allCardKeys = Object.keys(CARDS);
-  let winCount = 0;
+  const results = [];
 
   for (let i = 0; i < times; i++) {
-    // 25% trúng thẻ, 75% trượt
     if (Math.random() < 0.25) {
-      // Chọn ngẫu nhiên 1 thẻ trong danh sách
       const randomKey = allCardKeys[Math.floor(Math.random() * allCardKeys.length)];
-      if (!unlockedCards.includes(randomKey)) {
+      const isNew = !unlockedCards.includes(randomKey);
+      if (isNew) {
         unlockedCards.push(randomKey);
-        log(`🌟 [GACHA] <b>CHÚC MỪNG!</b> Bạn đã mở khóa thẻ mới: <b>${CARDS[randomKey].name}</b>!`, 'log-crit');
-      } else {
-        log(`✨ [GACHA] Bạn quay trúng [${CARDS[randomKey].name}] (Đã sở hữu trước đó).`, 'log-sys');
       }
-      winCount++;
+      results.push({ win: true, name: CARDS[randomKey].name, isNew: isNew });
     } else {
-      if (times === 1) log("💨 [GACHA] Rất tiếc, bạn đã không trúng thẻ nào!", 'log-e');
+      results.push({ win: false, name: 'Trượt rồi...' });
     }
-  }
-
-  if (times > 1) {
-    log(`🎲 Kết quả Roll x${times}: Trúng <b>${winCount}</b> lần | Trượt <b>${times - winCount}</b> lần.`, 'log-sys');
   }
 
   saveData();
   renderCards();
   updateUI();
+
+  // Bật Popup kết quả
+  const modal = document.getElementById('gacha-modal');
+  const container = document.getElementById('gacha-content');
+  container.innerHTML = '';
+
+  results.forEach(res => {
+    const item = document.createElement('div');
+    item.className = `gacha-item ${res.win ? 'win' : ''}`;
+    item.innerHTML = res.win 
+      ? `⭐ ${res.name} <br><small>${res.isNew ? '(MỚI!)' : '(Trùng)'}</small>`
+      : `💨 Trượt`;
+    container.appendChild(item);
+  });
+
+  modal.style.display = 'flex';
+}
+
+function closeGachaModal() {
+  document.getElementById('gacha-modal').style.display = 'none';
 }
 
 function toggleEquip(cardId) {
@@ -360,11 +398,9 @@ function toggleEquip(cardId) {
 
   const idx = equippedCardIds.indexOf(cardId);
   if (idx > -1) {
-    // Nếu đang mang thì tháo ra
     equippedCardIds.splice(idx, 1);
     log(`Đã gỡ thẻ: ${CARDS[cardId].name}`, 'log-sys');
   } else {
-    // Nếu chưa mang: kiểm tra giới hạn 3 thẻ
     if (equippedCardIds.length >= 3) {
       alert("Bạn chỉ có thể mang tối đa 3 thẻ cùng lúc! Hãy gỡ bớt 1 thẻ trước.");
       return;
@@ -409,15 +445,12 @@ function renderCards() {
 }
 
 function updateUI() {
-  // Vé roll
   document.getElementById('roll-tickets').innerText = rollTickets;
 
-  // Cập nhật người chơi
   document.getElementById('p-hp-bar').style.width = (player.hp / player.maxHp * 100) + '%';
   document.getElementById('p-hp-txt').innerText = `HP: ${player.hp} / ${player.maxHp}`;
   document.getElementById('p-stats').innerText = `Tấn công: ${player.atk} | Giáp: ${player.def} | Tốc: ${player.attackCooldown}s/đòn`;
 
-  // Danh sách 3 thẻ đang mang
   const eqList = document.getElementById('p-equipped-list');
   if (equippedCardIds.length === 0) {
     eqList.innerHTML = '<span style="color: #64748b;">Chưa trang bị thẻ nào (Tối đa 3)</span>';
@@ -425,22 +458,18 @@ function updateUI() {
     eqList.innerHTML = equippedCardIds.map(id => `<span class="equipped-tag">${CARDS[id].name}</span>`).join(' ');
   }
 
-  // Cập nhật đối thủ
   if (enemy) {
-    document.getElementById('e-name').innerText = enemy.name;
-    document.getElementById('e-status').innerText = enemy.hp > 0 ? 'Đang đấu' : 'Đã gục';
     document.getElementById('e-hp-bar').style.width = Math.max(0, (enemy.hp / enemy.maxHp * 100)) + '%';
     document.getElementById('e-hp-txt').innerText = `HP: ${enemy.hp} / ${enemy.maxHp}`;
-    document.getElementById('e-stats').innerText = `Tấn công: ${enemy.atk} | Giáp: ${enemy.def} | Tốc: ${enemy.attackCooldown}s/đòn`;
-    
-    if (enemy.cards && enemy.cards.length > 0) {
-      document.getElementById('e-equipped').innerText = enemy.cards.map(id => CARDS[id].name).join(', ');
-    } else {
-      document.getElementById('e-equipped').innerText = 'Không có kỹ năng';
-    }
   }
 }
 
-// Khởi chạy ban đầu
+function resetGame() {
+  if (confirm("Bạn có chắc chắn muốn xóa toàn bộ thẻ bài và vé để chơi lại từ đầu không?")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
 renderCards();
 updateUI();
