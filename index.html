@@ -82,7 +82,7 @@
         <button onclick="selectEnemy('training')">🎯 Bù Nhìn Tập Luyện</button>
       </div>
 
-      <div style="font-weight: bold; margin-bottom: 8px; color: #38bdf8;">2. ELITE BOSS (120 HP - 10 ATK - 0 DEF | Mang tối đa 2 THẺ | +3 Vé Roll):</div>
+      <div style="font-weight: bold; margin-bottom: 8px; color: #38bdf8;">2. ELITE BOSS (120 HP - 10 ATK - 4 DEF | Mang tối đa 2 THẺ | +3 Vé Roll):</div>
       <div class="btn-group" style="margin-bottom: 12px;">
         <button onclick="selectEnemy('archer')">🏹 Nguyễn Hoa</button>
         <button onclick="selectEnemy('mage')">🔮 Đức Lương</button>
@@ -137,7 +137,7 @@
       <div class="roll-section" id="roll-pool"></div>
     </div>
 
-    <!-- 5. BẢNG XẾP HẠNG PHÁ ĐẢO (DƯỚI CÙNG) -->
+    <!-- 5. BẢNG XẾP HẠNG PHÁ ĐẢO -->
     <div class="hall-of-fame">
       <h3 style="margin: 0 0 8px 0; color: #f59e0b; text-align: center;">🏆 BẢNG XẾP HẠNG ANH HÙNG PHÁ ĐẢO 🏆</h3>
       <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0 0 12px 0;">Vinh danh những chiến thần đã đánh bại Final Boss Khiết Nguyễn</p>
@@ -149,9 +149,7 @@
             <th style="width: 40%;">Thời Gian</th>
           </tr>
         </thead>
-        <tbody id="hall-list">
-          <!-- Danh sách được render tự động -->
-        </tbody>
+        <tbody id="hall-list"></tbody>
       </table>
     </div>
   </div>
@@ -165,7 +163,7 @@
     </div>
   </div>
 
-  <!-- MODAL NHẬP TÊN KHI CHIẾN THẮNG KHIẾT NGUYỄN -->
+  <!-- MODAL NHẬP TÊN CHIẾN THẮNG -->
   <div id="victory-modal" class="modal-overlay">
     <div class="victory-modal-box">
       <h2 style="color: #f59e0b; margin-top: 0;">👑 PHÁ ĐẢO TRÒ CHƠI! 👑</h2>
