@@ -1,5 +1,5 @@
 // ==========================================
-// HỆ THỐNG ÂM THANH WEB AUDIO API (KHÔNG CẦN FILE NGOÀI)
+// HỆ THỐNG ÂM THANH WEB AUDIO API
 // ==========================================
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
@@ -13,7 +13,7 @@ function initAudio() {
   }
 }
 
-// 1. Tiếng chém thường (Swish / Hit)
+// 1. Tiếng chém thường
 function playSlashSound() {
   initAudio();
   if (!audioCtx) return;
@@ -35,12 +35,11 @@ function playSlashSound() {
   osc.stop(audioCtx.currentTime + 0.1);
 }
 
-// 2. Tiếng lửa cháy / Thiêu đốt (Phoenix Fire)
+// 2. Tiếng lửa cháy / Thiêu đốt (Phoenix)
 function playFireSound() {
   initAudio();
   if (!audioCtx) return;
 
-  // Tạo âm thanh dạng tiếng ồn trắng (white noise) mô phỏng tiếng lửa
   const bufferSize = audioCtx.sampleRate * 0.15;
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -66,7 +65,7 @@ function playFireSound() {
   noise.start();
 }
 
-// 3. Tiếng Chí Mạng (Critical Hit - Bùm lớn)
+// 3. Tiếng Chí Mạng
 function playCritSound() {
   initAudio();
   if (!audioCtx) return;
@@ -88,12 +87,12 @@ function playCritSound() {
   osc.stop(audioCtx.currentTime + 0.25);
 }
 
-// 4. Tiếng Roll trúng thẻ xịn (Gacha Win Tinh Tinh)
+// 4. Tiếng Roll trúng thẻ xịn
 function playWinSound() {
   initAudio();
   if (!audioCtx) return;
 
-  const notes = [523.25, 659.25, 783.99, 1046.50]; // Đồ Mi Sol Đố
+  const notes = [523.25, 659.25, 783.99, 1046.50];
   notes.forEach((freq, index) => {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
