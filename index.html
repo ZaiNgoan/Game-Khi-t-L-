@@ -34,7 +34,7 @@
       <div class="card" id="card-e">
         <div class="card-header">
           <span class="card-title" id="e-name">Chưa chọn đối thủ</span>
-          <span class="badge" id="e-status">Chờ đấu</span>
+          <span class="badge" id="e-status">Chờ chọn</span>
         </div>
         <div class="avatar-wrap">
           <img id="e-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Enemy">
@@ -49,36 +49,55 @@
       </div>
     </div>
 
+    <!-- KHUNG ĐIỀU KHIỂN CHIẾN ĐẤU -->
+    <div class="battle-actions">
+      <button id="btn-start-battle" class="btn-start" onclick="triggerStartBattle()" disabled>
+        ⚔️ CHỌN ĐỐI THỦ PHÍA DƯỚI ĐỂ CHIẾN ĐẤU
+      </button>
+    </div>
+
     <!-- 2. KHUNG LOG Ở NGAY DƯỚI SÀN ĐẤU -->
     <div id="combat-log"></div>
 
-    <!-- 3. KHU VỰC KHIÊU CHIẾN -->
+    <!-- 3. KHU VỰC CHỌN ĐỐI THỦ KHIÊU CHIẾN -->
     <div class="controls">
-      <div style="font-weight: bold; margin-bottom: 8px;">⚔️ Chọn đối thủ khiêu chiến (Thắng nhận 10 lượt Roll):</div>
+      <div style="font-weight: bold; margin-bottom: 8px;">1. Chọn đối thủ muốn khiêu chiến:</div>
       <div class="btn-group">
-        <button onclick="startBattle('training')">🎯 Bù Nhìn Tập Luyện (Dễ)</button>
-        <button onclick="startBattle('archer')">🏹 Đấu Nguyễn Hoa</button>
-        <button onclick="startBattle('mage')">🔮 Đấu Đức Lương</button>
-        <button onclick="startBattle('tank')">🛡️ Đấu Dương Võ</button>
-        <button onclick="startBattle('phoenix')">🔥 Đấu Hữu Phai</button>
-        <button onclick="startBattle('crit')">💥 Đấu Đăng Khang</button>
-        <button onclick="startBattle('frenzy')">⚡ Đấu Phạm Đạt</button>
+        <button onclick="selectEnemy('training')">🎯 Bù Nhìn Tập Luyện (Dễ)</button>
+        <button onclick="selectEnemy('archer')">🏹 Nguyễn Hoa</button>
+        <button onclick="selectEnemy('mage')">🔮 Đức Lương</button>
+        <button onclick="selectEnemy('tank')">🛡️ Dương Võ</button>
+        <button onclick="selectEnemy('phoenix')">🔥 Hữu Phai</button>
+        <button onclick="selectEnemy('crit')">💥 Đăng Khang</button>
+        <button onclick="selectEnemy('frenzy')">⚡ Phạm Đạt</button>
       </div>
     </div>
 
     <!-- 4. KHU VỰC ROLL VÀ KHO THẺ Ở DƯỚI CÙNG -->
     <div class="controls">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="font-weight: bold;">🎲 Máy Roll Thẻ Bài: <span id="roll-tickets" style="color: #f59e0b; font-size: 16px;">0</span> vé</div>
-        <div>
-          <button id="btn-roll-1" onclick="rollCard(1)" style="background: #10b981;">Roll 1 Lần</button>
-          <button id="btn-roll-10" onclick="rollCard(10)" style="background: #f59e0b;">Roll 10 Lần</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div style="font-weight: bold;">
+          🎲 Máy Roll Thẻ Bài: <span id="roll-tickets" style="color: #f59e0b; font-size: 18px;">10</span> vé
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="rollCard(1)" style="background: #10b981;">🎲 Roll 1 Lần</button>
+          <button onclick="rollCard(10)" style="background: #f59e0b;">✨ Roll 10 Lần</button>
+          <button onclick="resetGame()" style="background: #475569; font-size: 11px;">🔄 Chơi lại</button>
         </div>
       </div>
-      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% ra thẻ mới | 75% trượt. Đã mở khóa sẽ lưu vĩnh viễn trên máy!</div>
+      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Lưu vĩnh viễn trên máy!</div>
 
-      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">Kho thẻ bài đã sở hữu:</div>
+      <div style="font-weight: bold; margin-top: 16px; margin-bottom: 4px;">Kho thẻ bài đã mở khóa:</div>
       <div class="roll-section" id="roll-pool"></div>
+    </div>
+  </div>
+
+  <!-- POPUP BẬT LÊN KHI ROLL THẺ BÀI -->
+  <div id="gacha-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 id="gacha-title">🎉 KẾT QUẢ ROLL</h3>
+      <div id="gacha-content" class="gacha-grid"></div>
+      <button class="btn-close-modal" onclick="closeGachaModal()">Nhận và Đóng</button>
     </div>
   </div>
 
