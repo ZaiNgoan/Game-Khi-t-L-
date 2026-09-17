@@ -26,9 +26,14 @@
         <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 100 / 100</div>
         
         <!-- HIỂN THỊ STACK CHÍ MẠNG (ĐĂNG KHANG) -->
-       <div id="crit-stack-box" style="display: none; margin-top: 4px; font-size: 12px; color: #facc15; font-weight: bold;">
-  💥 Tầng Crit: <span id="crit-stack-txt">0</span>/50 (<span id="crit-rate-txt">0%</span>)
-</div>
+        <div id="crit-stack-box" style="display: none; margin-top: 4px; font-size: 12px; color: #facc15; font-weight: bold;">
+          💥 Tầng Crit: <span id="crit-stack-txt">0</span>/50 (<span id="crit-rate-txt">0%</span>)
+        </div>
+
+        <!-- HIỂN THỊ STACK TẬP SỰ VIP PRO -->
+        <div id="vippro-stack-box" style="display: none; margin-top: 4px; font-size: 12px; color: #38bdf8; font-weight: bold;">
+          🎯 Điểm VIP Pro: <span id="vippro-stack-txt">0</span>/8 🔫
+        </div>
 
         <div class="stats" id="p-stats">Tấn công: 10 | Giáp: 0 | Tốc: 2s/đòn</div>
         <div class="equipped-box">
@@ -51,7 +56,6 @@
         <div class="bar-wrap"><div id="e-hp-bar" class="bar-fill hp-enemy" style="width: 100%;"></div></div>
         <div id="e-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 0 / 0</div>
         
-        <!-- Thanh Huyết Hồn cho Boss Atula -->
         <div id="atula-soul-box" style="display: none; margin-top: 4px;">
           <div style="display: flex; justify-content: space-between; font-size: 11px; color: #f43f5e; font-weight: bold;">
             <span>🩸 Huyết Hồn:</span>
@@ -70,21 +74,19 @@
       </div>
     </div>
 
-    <!-- NÚT BẮT ĐẦU CHIẾN ĐẤU -->
     <div class="battle-actions">
       <button id="btn-start-battle" class="btn-start" onclick="triggerStartBattle()" disabled>
         ⚔️ CHỌN ĐỐI THỦ PHÍA DƯỚI ĐỂ CHIẾN ĐẤU
       </button>
     </div>
 
-    <!-- KHUNG LOG CHIẾN ĐẤU -->
     <div id="combat-log"></div>
 
-    <!-- KHU VỰC CHỌN BOSS -->
     <div class="controls">
       <div style="font-weight: bold; margin-bottom: 8px; color: #94a3b8;">1. TẬP SỰ (+1 Vé Roll):</div>
       <div class="btn-group" style="margin-bottom: 12px;">
         <button onclick="selectEnemy('training')">🎯 Bù Nhìn Tập Luyện</button>
+        <button onclick="selectEnemy('vippro')" style="background: #0284c7; font-weight: bold;">💎 Tập Sự VIP Pro</button>
       </div>
 
       <div style="font-weight: bold; margin-bottom: 8px; color: #38bdf8;">2. ELITE BOSS (120 HP - 10 ATK - 4 DEF | Mang tối đa 2 THẺ | +3 Vé Roll):</div>
@@ -114,7 +116,6 @@
       </div>
     </div>
 
-    <!-- MÁY ROLL VÀ KHO THẺ -->
     <div class="controls">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
         <div style="font-weight: bold;">
@@ -131,8 +132,8 @@
       <div style="margin-top: 16px;">
         <div style="font-weight: bold; margin-bottom: 8px;">Kho thẻ bài:</div>
         <div class="filter-tabs">
-          <button class="tab-btn active" onclick="setCardFilter('all', this)">🌟 Tất Cả (12)</button>
-          <button class="tab-btn" onclick="setCardFilter('basic', this)">🟢 Mặc Định (3)</button>
+          <button class="tab-btn active" onclick="setCardFilter('all', this)">🌟 Tất Cả (13)</button>
+          <button class="tab-btn" onclick="setCardFilter('basic', this)">🟢 Mặc Định & Tập Sự (4)</button>
           <button class="tab-btn" onclick="setCardFilter('elite', this)">🔵 Boss Elite (7)</button>
           <button class="tab-btn" onclick="setCardFilter('super', this)">🟣 Siêu Boss & Final (5)</button>
         </div>
@@ -141,7 +142,6 @@
       <div class="roll-section" id="roll-pool"></div>
     </div>
 
-    <!-- 5. BẢNG XẾP HẠNG PHÁ ĐẢO -->
     <div class="hall-of-fame">
       <h3 style="margin: 0 0 8px 0; color: #f59e0b; text-align: center;">🏆 BẢNG XẾP HẠNG ANH HÙNG PHÁ ĐẢO 🏆</h3>
       <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0 0 12px 0;">Vinh danh những chiến thần đã đánh bại Final Boss Khiết Nguyễn</p>
@@ -156,7 +156,17 @@
         <tbody id="hall-list"></tbody>
       </table>
     </div>
+  </div>
 
+  <!-- MODAL BẢNG TỔNG KẾT TRẬN ĐẤU (BATTLE REPORT) -->
+  <div id="report-modal" class="modal-overlay">
+    <div class="modal-box" style="border-color: #10b981;">
+      <h3 style="color: #10b981; margin-top: 0;">📊 BÁO CÁO TRẬN ĐẤU</h3>
+      <div id="report-content" style="text-align: left; font-size: 13px; color: #e2e8f0; margin: 15px 0; line-height: 1.6;">
+        <!-- Nội dung report điền bằng JS -->
+      </div>
+      <button class="btn-close-modal" onclick="closeReportModal()">Xác Nhận</button>
+    </div>
   </div>
 
   <div id="gacha-modal" class="modal-overlay">
