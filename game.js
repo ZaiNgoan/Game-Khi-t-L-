@@ -1,5 +1,5 @@
 // ==========================================
-// 1. TẤT CẢ THẺ BÀI TRONG GAME (11 THẺ ĐẦY ĐỦ)
+// 1. TẤT CẢ THẺ BÀI TRONG GAME (12 THẺ ĐẦY ĐỦ)
 // ==========================================
 const CARDS = {
   // 3 THẺ CƠ BẢN
@@ -28,109 +28,118 @@ const CARDS = {
     atkBonus: 0, hpBonus: 0, defBonus: 8
   },
 
-  // 7 ELITE BOSS (120 HP - 10 ATK - 10 DEF)
+  // 7 ELITE BOSS (Trang bị: +20 HP, +3 ATK)
   archer: {
     id: 'archer',
     name: 'Thẻ Xạ Thủ Nguyễn Hoa',
     enemyName: 'Decidueye Nguyễn Hoa',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/724.gif',
-    desc: '+5 Tấn công. Mỗi đòn thứ 3 gây thêm 4% HP tối đa mục tiêu (ST Chuẩn).',
-    atkBonus: 5, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/decidueye.gif',
+    desc: '+20 HP, +8 ATK (+3 gốc & +5 nội tại). Mỗi đòn thứ 3 gây thêm 4% HP tối đa mục tiêu (ST Chuẩn).',
+    atkBonus: 8, hpBonus: 20, defBonus: 0
   },
   mage: {
     id: 'mage',
     name: 'Thẻ Thuật Sư Đức Lương',
     enemyName: 'Gardevoir Đức Lương',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/282.gif',
-    desc: 'Mỗi 1s hồi 7 máu, nhịp hồi thứ 5 hồi gấp đôi (14 máu).',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/gardevoir.gif',
+    desc: '+20 HP, +3 ATK. Mỗi 1s hồi 7 máu, nhịp hồi thứ 5 hồi gấp đôi (14 máu).',
+    atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   tank: {
     id: 'tank',
     name: 'Thẻ Phòng Ngự Dương Võ',
     enemyName: 'Blastoise Dương Võ',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/9.gif',
-    desc: '30% Block đòn đánh, phản lại 50% sát thương đó.',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/blastoise.gif',
+    desc: '+20 HP, +3 ATK. 30% Block đòn đánh, phản lại 50% sát thương đó.',
+    atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   phoenix: {
     id: 'phoenix',
     name: 'Thẻ Ngọn Lửa Hữu Phai',
     enemyName: 'Ho-Oh Hữu Phai',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/250.gif',
-    desc: 'Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (ST chuẩn).',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/ho-oh.gif',
+    desc: '+20 HP, +3 ATK. Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (ST chuẩn).',
+    atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   crit: {
     id: 'crit',
     name: 'Thẻ Chí Mạng Đăng Khang',
     enemyName: 'Scizor Đăng Khang',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/212.gif',
-    desc: 'Mỗi 1s tích 1 tầng (+0.5% crit, max 50 tầng). Đòn chí mạng gây x3 sát thương.',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/scizor.gif',
+    desc: '+20 HP, +3 ATK. Mỗi 1s tích 1 tầng (+0.5% crit, max 50 tầng). Đòn chí mạng gây x3 sát thương.',
+    atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   frenzy: {
     id: 'frenzy',
     name: 'Thẻ Tốc Đánh Phạm Đạt',
     enemyName: 'Greninja Phạm Đạt',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/658.gif',
-    desc: 'Khi tung đòn có 12% đánh thêm 1 lần và tăng tốc đánh lên x2 (1s/đòn) trong 4s.',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/greninja.gif',
+    desc: '+20 HP, +3 ATK. Khi tung đòn có 12% đánh thêm 1 lần và tăng tốc đánh lên x2 (1s/đòn) trong 4s.',
+    atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   cruise: {
     id: 'cruise',
     name: 'Thẻ Triều Cường',
     enemyName: 'Triều Cường',
     tier: 'elite',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/130.gif',
-    desc: 'Mỗi 2s tăng +1 Thủ (max +15). Khi đạt +15 Thủ lập tức đánh liên hoàn 7 lần (mỗi lần 50% Thủ) 1 lần duy nhất.',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/gyarados.gif',
+    desc: '+20 HP, +3 ATK. Mỗi 2s tăng +1 Thủ (max +15). Khi đạt +15 Thủ lập tức đánh liên hoàn 7 lần (50% Thủ).',
+    atkBonus: 3, hpBonus: 20, defBonus: 0
   },
 
-  // 3 SIÊU BOSS
+  // 4 SIÊU BOSS (Trang bị: +75 HP, +5 ATK)
   mora: {
     id: 'mora',
     name: 'Thẻ Hấp Thụ Mora',
     enemyName: 'Xà Vương Mora',
     tier: 'super',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/497.gif',
-    desc: 'Khi bị đánh có 14% hồi lại 50% sát thương nhận vào. Cứ 2 lần hồi thành công sẽ +2 Công vĩnh viễn (max +96).',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/serperior.gif',
+    desc: '+75 HP, +5 ATK. Khi bị đánh có 14% hồi lại 50% sát thương nhận vào. Cứ 2 lần hồi thành công sẽ +2 Công vĩnh viễn (max +96).',
+    atkBonus: 5, hpBonus: 75, defBonus: 0
   },
   atula: {
     id: 'atula',
     name: 'Thẻ Huyết Hồn Atula',
     enemyName: 'Chiến Thần Atula',
     tier: 'super',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/487.gif',
-    desc: 'Khi bị đánh có 9% tích 150% giá trị vào Huyết Hồn. Khi Huyết Hồn đủ kết liễu mục tiêu sẽ xả toàn bộ gây sát thương chuẩn.',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/giratina.gif',
+    desc: '+75 HP, +5 ATK. Khi bị đánh có 9% tích 150% giá trị vào Huyết Hồn. Khi Huyết Hồn đủ kết liễu mục tiêu sẽ xả toàn bộ gây sát thương chuẩn.',
+    atkBonus: 5, hpBonus: 75, defBonus: 0
   },
   kolos: {
     id: 'kolos',
     name: 'Thẻ Hư Vô Kolos',
     enemyName: 'Bạo Chúa Kolos',
     tier: 'super',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/644.gif',
-    desc: 'Khi chịu sát thương có 20% khóa toàn bộ thẻ nội tại của đối phương trong 2s, đồng thời hút 30 HP của đối phương.',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/zekrom.gif',
+    desc: '+75 HP, +5 ATK. Khi chịu sát thương có 20% khóa toàn bộ thẻ nội tại của đối phương trong 2s, đồng thời hút 30 HP của đối phương.',
+    atkBonus: 5, hpBonus: 75, defBonus: 0
+  },
+  ayanokouji: {
+    id: 'ayanokouji',
+    name: 'Thẻ Thiên Tài Ayanokouji',
+    enemyName: 'Ayanokouji-kun',
+    tier: 'super',
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/mewtwo.gif',
+    desc: '+75 HP, +5 ATK. Cứ mỗi 4s có 5% tỉ lệ lập tức gây sát thương bằng 50% lượng máu hiện tại của đối thủ.',
+    atkBonus: 5, hpBonus: 75, defBonus: 0
   },
 
-  // FINAL BOSS
+  // FINAL BOSS (ĐỔI TÊN THÀNH KHIẾT NGUYỄN)
   bles: {
     id: 'bles',
-    name: 'Thẻ Tối Thượng Ultra BLES',
-    enemyName: 'Chúa Tể Ultra BLES',
+    name: 'Thẻ Tối Thượng Khiết Nguyễn',
+    enemyName: 'Khiết Nguyễn',
     tier: 'final',
-    imgUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/384.gif',
-    desc: 'Không thể đánh thường. Cứ mỗi 3s tung Trảm Sát gây 135% sát thương theo ATK hiện tại và tự tăng 30 ATK (max 10 lần).',
-    atkBonus: 0, hpBonus: 0, defBonus: 0
+    imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/rayquaza.gif',
+    desc: '+75 HP, +5 ATK. Cứ mỗi 3s tung Trảm Sát gây 15% sát thương theo ATK hiện tại và tự tăng 30 ATK vĩnh viễn (max 10 lần).',
+    atkBonus: 5, hpBonus: 75, defBonus: 0
   }
 };
 
@@ -145,7 +154,6 @@ let equippedCardIds = JSON.parse(localStorage.getItem('equippedCardIds')) || [];
 let rollTickets = (localStorage.getItem('rollTickets') !== null) ? parseInt(localStorage.getItem('rollTickets')) : 10;
 let currentCardFilter = 'all';
 
-// Đảm bảo 3 thẻ cơ bản luôn có mặt trong Pool
 DEFAULT_POOL.forEach(id => {
   if (!poolAvailableCards.includes(id)) poolAvailableCards.push(id);
 });
@@ -181,6 +189,7 @@ let enemy = null;
 let battleTimer = null;
 let isFighting = false;
 let tick = 0;
+let ayanokoujiExecuted = false;
 
 function showPopup(targetType, text, cls) {
   const container = document.getElementById(targetType === 'player' ? 'card-p' : 'card-e');
@@ -223,11 +232,13 @@ function calcDamage(atk, def) {
   return Math.max(1, finalDamage);
 }
 
+// CẬP NHẬT GIỚI HẠN THẺ THEO YÊU CẦU:
+// Elite: 2 thẻ | Siêu Boss: 3 thẻ | Final: 5 thẻ
 function getMaxEquipLimit() {
   if (!enemy || enemy.id === 'training') return 3;
-  if (enemy.tier === 'elite') return 1;
-  if (enemy.tier === 'final') return 5;
-  return 3;
+  if (enemy.tier === 'elite') return 2; // Elite boss: Tối đa 2 thẻ
+  if (enemy.tier === 'final') return 5; // Final boss: Tối đa 5 thẻ
+  return 3; // Siêu boss: Tối đa 3 thẻ
 }
 
 function calculatePlayerStats(refillHp = false) {
@@ -297,8 +308,6 @@ function selectEnemy(targetId) {
       bloodSoul: 0
     };
     soulBox.style.display = 'block';
-    document.getElementById('atula-soul-txt').innerText = '0';
-    document.getElementById('atula-soul-bar').style.width = '0%';
   } else if (targetId === 'kolos') {
     enemy = {
       id: 'kolos',
@@ -310,10 +319,21 @@ function selectEnemy(targetId) {
       cards: ['kolos'],
       attackCooldown: 2
     };
+  } else if (targetId === 'ayanokouji') {
+    enemy = {
+      id: 'ayanokouji',
+      name: 'Ayanokouji-kun',
+      tier: 'super',
+      rewardTickets: 4,
+      imgUrl: CARDS.ayanokouji.imgUrl,
+      maxHp: 50, hp: 50, atk: 50, def: 0,
+      cards: ['ayanokouji'],
+      attackCooldown: 2
+    };
   } else if (targetId === 'bles') {
     enemy = {
       id: 'bles',
-      name: 'Ultra BLES',
+      name: 'Khiết Nguyễn',
       tier: 'final',
       rewardTickets: 10,
       imgUrl: CARDS.bles.imgUrl,
@@ -372,6 +392,7 @@ function triggerStartBattle() {
 
   isFighting = true;
   tick = 0;
+  ayanokoujiExecuted = false;
   document.getElementById('combat-log').innerHTML = '';
 
   calculatePlayerStats(true);
@@ -441,6 +462,39 @@ function battleTick() {
   applyPerSecond(player, enemy, pActiveCards, 'player', 'enemy', 'log-p');
   applyPerSecond(enemy, player, enemy.cards, 'enemy', 'player', 'log-e');
 
+  // HIỆU ỨNG THẺ AYANOKOUJI (NGƯỜI CHƠI TRANG BỊ)
+  if (tick % 4 === 0 && pActiveCards.includes('ayanokouji')) {
+    if (Math.random() < 0.05) {
+      let cutDmg = Math.max(1, Math.round(enemy.hp * 0.5));
+      enemy.hp = Math.max(0, enemy.hp - cutDmg);
+      showPopup('enemy', `-${cutDmg}`, 'dmg-true');
+      showSkillBanner('player', '♟️ THAO TÚNG: -50% HP HIỆN TẠI!', '#be185d');
+      log(`♟️ <b>[AYANOKOUJI NỘI TẠI]</b> Bạn kích hoạt thao túng gây <b>${cutDmg} HP</b> (50% HP hiện tại) của đối thủ!`, 'log-crit');
+    }
+  }
+
+  // CƠ CHẾ RIÊNG CỦA BOSS AYANOKOUJI: Khi 1 trong 2 còn <= 50% Max HP
+  if (enemy.id === 'ayanokouji' && !ayanokoujiExecuted) {
+    if (player.hp <= player.maxHp * 0.5 || enemy.hp <= enemy.maxHp * 0.5) {
+      ayanokoujiExecuted = true;
+      showSkillBanner('enemy', '♟️ PHÁN QUYẾT TUYỆT ĐỐI (50% HP)!', '#be185d');
+      log(`♟️ <b>[AYANOKOUJI-KUN]</b> Ngưỡng máu chạm điểm bẫy (<= 50% Max HP)! Kích hoạt cơ chế Phán Quyết!`, 'log-crit');
+
+      if (Math.random() < 0.85) {
+        player.hp = 0;
+        showPopup('player', `💀 EXECUTE`, 'dmg-crit');
+        log(`☠️ <b>[THAO TÚNG BẠI TRẬN]</b> Ayanokouji đã lường trước nước đi của bạn! Bạn bị kết liễu tức khắc!`, 'log-e');
+      } else {
+        enemy.hp = 0;
+        showPopup('enemy', `💀 EXECUTE`, 'dmg-crit');
+        log(`🎉 <b>[THAO TÚNG NGHỊCH ĐẢO]</b> Bạn đã vượt qua bài kiểm tra bất khả thi! Ayanokouji nhận thất bại!`, 'log-crit');
+      }
+      updateUI();
+      checkCombatEnd();
+      return;
+    }
+  }
+
   if (tick % 2 === 0) {
     applyCruisePassive(player, enemy, pActiveCards, 'player', 'Bạn', 'log-p');
     applyCruisePassive(enemy, player, enemy.cards, 'enemy', enemy.name, 'log-e');
@@ -453,6 +507,7 @@ function battleTick() {
     if (checkCombatEnd()) return;
   }
 
+  // FINAL BOSS: KHIẾT NGUYỄN
   if (enemy.id === 'bles') {
     if (tick % 3 === 0) {
       executeBlesUltimate();
@@ -502,19 +557,19 @@ function applyCruisePassive(obj, opponent, cardIds, objType, objName, logCls) {
 function executeBlesUltimate() {
   enemy.attackCount++;
   let currentAtk = enemy.atk + (enemy.blesBonusAtk || 0);
-  let rawDmg = Math.round(currentAtk * 1.35);
+  let rawDmg = Math.round(currentAtk * 0.15); // 15% sát thương
   let realDmg = calcDamage(rawDmg, player.def);
 
   player.hp = Math.max(0, player.hp - realDmg);
   showPopup('player', `💥 -${realDmg}`, 'dmg-crit');
-  showSkillBanner('enemy', '👑 TRẢM SÁT 135% SÁT THƯƠNG!', '#f59e0b');
-  log(`👑 <b>[ULTRA BLES]</b> Kích hoạt TRẢM SÁT gây <b>${realDmg}</b> sát thương lên Bạn!`, 'log-crit');
+  showSkillBanner('enemy', '👑 TRẢM SÁT 15% SÁT THƯƠNG!', '#f59e0b');
+  log(`👑 <b>[KHIẾT NGUYỄN]</b> Kích hoạt TRẢM SÁT gây <b>${realDmg}</b> sát thương lên Bạn!`, 'log-crit');
 
   if ((enemy.blesStacks || 0) < 10) {
     enemy.blesStacks = (enemy.blesStacks || 0) + 1;
     enemy.blesBonusAtk = (enemy.blesBonusAtk || 0) + 30;
     showSkillBanner('enemy', `⚔️ +30 ATK (${enemy.blesStacks}/10 TẦNG)`, '#ef4444');
-    log(`🔥 <b>[ULTRA BLES]</b> Tăng thêm <b>+30 ATK</b> vĩnh viễn (Hiện tại: ${enemy.atk + enemy.blesBonusAtk} ATK)!`, 'log-crit');
+    log(`🔥 <b>[KHIẾT NGUYỄN]</b> Tăng thêm <b>+30 ATK</b> vĩnh viễn (Hiện tại: ${enemy.atk + enemy.blesBonusAtk} ATK)!`, 'log-crit');
   }
 }
 
@@ -604,16 +659,16 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     defObj.bloodSoul = (defObj.bloodSoul || 0) + soulAdd;
     showSkillBanner(defType, `🩸 +${soulAdd} HUYẾT HỒN!`, '#f43f5e');
     log(`🩸 [${defObj.name}] tích tụ <b>+${soulAdd} Huyết Hồn</b> (Tổng: ${defObj.bloodSoul}).`, 'log-crit');
+  }
 
-    if (defObj.bloodSoul >= atkObj.hp) {
-      let executeDmg = defObj.bloodSoul;
-      atkObj.hp = 0;
-      defObj.bloodSoul = 0;
-      showPopup(atkType, `💀 -${executeDmg}`, 'dmg-crit');
-      showSkillBanner(defType, '☠️ TUYỆT KỸ: HUYẾT HỒN BẠO KÍCH!', '#b91c1c');
-      log(`☠️ <b>[ATULA TUYỆT KỸ]</b> Xả toàn bộ ${executeDmg} Huyết Hồn kết liễu đối phương lập tức!`, 'log-crit');
-      return;
-    }
+  if (defCardIds.includes('atula') && defObj.bloodSoul >= atkObj.hp) {
+    let executeDmg = defObj.bloodSoul;
+    atkObj.hp = 0;
+    defObj.bloodSoul = 0;
+    showPopup(atkType, `💀 -${executeDmg}`, 'dmg-crit');
+    showSkillBanner(defType, '☠️ TUYỆT KỸ: HUYẾT HỒN BẠO KÍCH!', '#b91c1c');
+    log(`☠️ <b>[ATULA TUYỆT KỸ]</b> Xả toàn bộ ${executeDmg} Huyết Hồn kết liễu đối phương lập tức!`, 'log-crit');
+    return;
   }
 
   if (defCardIds.includes('kolos') && Math.random() < 0.20) {
@@ -652,6 +707,15 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
 function checkCombatEnd() {
   const btnStart = document.getElementById('btn-start-battle');
 
+  if (enemy && enemy.id === 'atula' && enemy.bloodSoul >= player.hp && player.hp > 0) {
+    let executeDmg = enemy.bloodSoul;
+    player.hp = 0;
+    enemy.bloodSoul = 0;
+    showPopup('player', `💀 -${executeDmg}`, 'dmg-crit');
+    showSkillBanner('enemy', '☠️ TUYỆT KỸ: HUYẾT HỒN BẠO KÍCH!', '#b91c1c');
+    log(`☠️ <b>[ATULA TUYỆT KỸ]</b> Xả ${executeDmg} Huyết Hồn kết liễu Bạn thành công!`, 'log-crit');
+  }
+
   if (player.hp <= 0) {
     clearInterval(battleTimer);
     isFighting = false;
@@ -668,7 +732,6 @@ function checkCombatEnd() {
     const gainedTickets = enemy.rewardTickets || 1;
     rollTickets += gainedTickets;
 
-    // MỞ KHÓA THẺ VÀO POOL ROLL VĨNH VIỄN
     if (enemy.id !== 'training' && !poolAvailableCards.includes(enemy.id)) {
       poolAvailableCards.push(enemy.id);
       log(`🌟 <b>CHIẾN CÔNG HIỂN HÁCH!</b> Mở khóa <b>${CARDS[enemy.id].name}</b> vào Bể Roll!`, 'log-crit');
@@ -765,7 +828,7 @@ function toggleEquip(cardId) {
   updateUI();
 }
 
-// HIỂN THỊ ĐỦ 100% CÁC THẺ TRONG GAME
+// HIỂN THỊ ĐẦY ĐỦ 100% CÁC THẺ TRONG POOL VÀ KHO
 function renderCards() {
   const pool = document.getElementById('roll-pool');
   pool.innerHTML = '';
@@ -773,6 +836,10 @@ function renderCards() {
   for (let key in CARDS) {
     const c = CARDS[key];
 
+    // Lọc đúng danh mục từng tab:
+    // Tab basic: basic
+    // Tab elite: elite
+    // Tab super: super & final (gồm cả Mora, Atula, Kolos, Ayanokouji, Khiết Nguyễn)
     if (currentCardFilter === 'basic' && c.tier !== 'basic') continue;
     if (currentCardFilter === 'elite' && c.tier !== 'elite') continue;
     if (currentCardFilter === 'super' && c.tier !== 'super' && c.tier !== 'final') continue;
@@ -870,14 +937,14 @@ function updateUI() {
 
     if (enemy.id === 'atula') {
       document.getElementById('atula-soul-txt').innerText = `${enemy.bloodSoul} / Cần ${player.hp} để trảm`;
-      let soulPercent = Math.min(100, (enemy.bloodSoul / player.maxHp * 100));
+      let soulPercent = Math.min(100, (enemy.bloodSoul / player.hp * 100));
       document.getElementById('atula-soul-bar').style.width = `${soulPercent}%`;
     }
   }
 }
 
 function resetGame() {
-  if (confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu để chơi lại từ đầu? Bạn sẽ được nhận lại 10 vé roll khởi đầu!")) {
+  if (confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu để chơi lại từ đầu? Bạn sẽ nhận lại 10 vé roll khởi đầu!")) {
     localStorage.clear();
     location.reload();
   }
