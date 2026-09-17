@@ -101,3 +101,14 @@ button:disabled { background: #475569 !important; cursor: not-allowed; }
 .gacha-item { background: #0b0f19; border: 1px solid #334155; padding: 8px; border-radius: 8px; font-size: 12px; width: 135px; text-align: center; }
 .gacha-item.win { border-color: #f59e0b; background: #1e293b; font-weight: bold; color: #facc15; }
 .btn-close-modal { background: #10b981; padding: 10px 20px; font-size: 14px; border-radius: 6px; border: none; color: #fff; cursor: pointer; }
+/* BẢNG XẾP HẠNG PHÁ ĐẢO */
+.hall-of-fame { background: #161f30; border: 1px solid #f59e0b; border-radius: 12px; padding: 16px; margin-top: 20px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
+.hall-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; }
+.hall-table th { background: #0b0f19; padding: 10px; color: #f59e0b; border-bottom: 1px solid #334155; }
+.hall-table td { padding: 8px 10px; border-bottom: 1px solid #283548; color: #cbd5e1; }
+.hall-table tr:nth-child(even) { background: #0e1626; }
+.hall-rank { font-weight: bold; color: #38bdf8; }
+
+/* MODAL NHẬP TÊN CHIẾN THẮNG */
+.victory-modal-box { background: #161f30; border: 3px solid #f59e0b; border-radius: 12px; padding: 24px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(245, 158, 11, 0.6); }
+.victory-input { width: 80%; padding: 10px; border-radius: 6px; border: 1px solid #38bdf8; background: #0b0f19; color: #fff; font-size: 14px; margin: 15px 0; text-align: center; outline: none; }
