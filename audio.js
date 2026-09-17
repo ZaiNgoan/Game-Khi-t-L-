@@ -13,7 +13,6 @@ function initAudio() {
   }
 }
 
-// 1. Tiếng chém thường
 function playSlashSound() {
   initAudio();
   if (!audioCtx) return;
@@ -30,7 +29,6 @@ function playSlashSound() {
   osc.stop(audioCtx.currentTime + 0.1);
 }
 
-// 2. Tiếng lửa cháy / Thiêu đốt
 function playFireSound() {
   initAudio();
   if (!audioCtx) return;
@@ -54,7 +52,6 @@ function playFireSound() {
   noise.start();
 }
 
-// 3. Tiếng Chí Mạng
 function playCritSound() {
   initAudio();
   if (!audioCtx) return;
@@ -71,7 +68,6 @@ function playCritSound() {
   osc.stop(audioCtx.currentTime + 0.25);
 }
 
-// 4. Tiếng Roll trúng thẻ xịn
 function playWinSound() {
   initAudio();
   if (!audioCtx) return;
@@ -90,7 +86,6 @@ function playWinSound() {
   });
 }
 
-// 5. Tiếng Phóng Gai / Bắn liên tục (Triều Cường / Xạ thủ)
 function playSpikeSound() {
   initAudio();
   if (!audioCtx) return;
@@ -107,11 +102,10 @@ function playSpikeSound() {
   osc.stop(audioCtx.currentTime + 0.08);
 }
 
-// 6. Tiếng Hồi Máu (Đức Lương / Mora)
 function playHealSound() {
   initAudio();
   if (!audioCtx) return;
-  const notes = [440, 554.37, 659.25]; // Âm hưởng phép thuật trong trẻo
+  const notes = [440, 554.37, 659.25];
   notes.forEach((freq, index) => {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -126,14 +120,12 @@ function playHealSound() {
   });
 }
 
-// 7. Tiếng Gầm Của Rồng (Final Boss Khiết Nguyễn)
 function playDragonRoarSound() {
   initAudio();
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = 'sawtooth';
-  // Tần số trầm, vang mô phỏng tiếng gầm uy lực
   osc.frequency.setValueAtTime(100, audioCtx.currentTime);
   osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.6);
   gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
@@ -142,4 +134,27 @@ function playDragonRoarSound() {
   gain.connect(audioCtx.destination);
   osc.start();
   osc.stop(audioCtx.currentTime + 0.6);
+}
+
+// 8. Tiếng xả loạt 10 viên đạn VIP Pro (Rapid Gunfire)
+function playVipProGunSound() {
+  initAudio();
+  if (!audioCtx) return;
+  // Tạo tiếng súng ngắn liên thanh bằng cách phát nhanh tiếng noise + square wave
+  for(let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(400 - i * 50, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.05);
+    }, i * 40);
+  }
 }
