@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đấu Trường Thẻ Bài Chiến Thuật</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Nhúng file bảo vệ chống F12 -->
   <script src="protect.js"></script>
 </head>
 <body>
@@ -25,6 +24,12 @@
         </div>
         <div class="bar-wrap"><div id="p-hp-bar" class="bar-fill hp-player" style="width: 100%;"></div></div>
         <div id="p-hp-txt" style="font-weight: bold; font-size: 13px;">HP: 100 / 100</div>
+        
+        <!-- HIỂN THỊ STACK CHÍ MẠNG (ĐĂNG KHANG) -->
+        <div id="crit-stack-box" style="display: none; margin-top: 4px; font-size: 12px; color: #facc15; font-weight: bold;">
+          💥 Tầng Crit: <span id="crit-stack-txt">0</span>/50 (<span id="crit-rate-txt">0%</span>)
+        </div>
+
         <div class="stats" id="p-stats">Tấn công: 10 | Giáp: 0 | Tốc: 2s/đòn</div>
         <div class="equipped-box">
           <div style="font-weight: bold; font-size: 12px; margin-bottom: 4px;">
@@ -123,7 +128,6 @@
       </div>
       <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Tỉ lệ: 25% trúng thẻ mới | 75% trượt. Không bao giờ roll trùng thẻ đã sở hữu!</div>
 
-      <!-- BỘ LỌC THẺ BÀI -->
       <div style="margin-top: 16px;">
         <div style="font-weight: bold; margin-bottom: 8px;">Kho thẻ bài:</div>
         <div class="filter-tabs">
@@ -155,7 +159,6 @@
 
   </div>
 
-  <!-- MODAL POPUP ROLL GACHA -->
   <div id="gacha-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 id="gacha-title">🎉 KẾT QUẢ ROLL</h3>
@@ -164,7 +167,6 @@
     </div>
   </div>
 
-  <!-- MODAL NHẬP TÊN CHIẾN THẮNG -->
   <div id="victory-modal" class="modal-overlay">
     <div class="victory-modal-box">
       <h2 style="color: #f59e0b; margin-top: 0;">👑 PHÁ ĐẢO TRÒ CHƠI! 👑</h2>
@@ -175,7 +177,6 @@
     </div>
   </div>
 
-  <!-- NHÚNG FILE ÂM THANH VÀ LOGIC GAME -->
   <script src="audio.js"></script>
   <script src="game.js"></script>
 </body>
