@@ -140,7 +140,6 @@ const CARDS = {
 // 2. KHỞI TẠO BỘ NHỚ LOCALSTORAGE
 // ==========================================
 const DEFAULT_POOL = ['basic_atk', 'basic_hp', 'basic_def'];
-
 let poolAvailableCards = JSON.parse(localStorage.getItem('poolAvailableCards')) || [...DEFAULT_POOL];
 let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
 let equippedCardIds = JSON.parse(localStorage.getItem('equippedCardIds')) || [];
@@ -195,7 +194,6 @@ function showPopup(targetType, text, cls) {
     void img.offsetWidth;
     img.classList.add('shake-hit');
   }
-
   const pop = document.createElement('div');
   pop.className = `dmg-pop ${cls}`;
   pop.innerText = text;
@@ -249,11 +247,9 @@ function calculatePlayerStats(refillHp = false) {
       bonusDef += CARDS[id].defBonus || 0;
     }
   });
-
   player.maxHp = BASE_STATS.hp + bonusHp;
   player.atk = BASE_STATS.atk + bonusAtk;
   player.def = BASE_STATS.def + bonusDef;
-
   if (refillHp || !isFighting) {
     player.hp = player.maxHp;
   }
@@ -268,7 +264,6 @@ function selectEnemy(targetId) {
     clearInterval(battleTimer);
     isFighting = false;
   }
-
   const soulBox = document.getElementById('atula-soul-box');
   soulBox.style.display = 'none';
 
@@ -374,20 +369,18 @@ function selectEnemy(targetId) {
   document.getElementById('e-hp-bar').style.width = '100%';
   document.getElementById('e-hp-txt').innerText = `HP: ${enemy.hp} / ${enemy.maxHp}`;
   document.getElementById('e-equipped').innerText = (enemy.cards.length > 0) ? enemy.cards.map(id => CARDS[id].name).join(', ') : 'Không có';
-
+  
   updateUI();
   renderCards();
 }
 
 function triggerStartBattle() {
   if (!enemy || isFighting) return;
-
   const maxLimit = getMaxEquipLimit();
   if (equippedCardIds.length > maxLimit) {
     alert(`LỖI: Bạn đang mang ${equippedCardIds.length} thẻ! Với đối thủ này bạn chỉ được mang tối đa ${maxLimit} thẻ.`);
     return;
   }
-
   if (enemy.id === 'ayanokouji' && !checkAyanokoujiRequirement()) {
     alert("🔒 ĐIỀU KIỆN KHÓA: Bạn bắt buộc phải trang bị đủ cả 3 thẻ Siêu Boss (Mora, Atula, Kolos) thì mới được quyền khiêu chiến Ayanokouji-kun!");
     return;
@@ -397,8 +390,8 @@ function triggerStartBattle() {
   tick = 0;
   ayanokoujiExecuted = false;
   document.getElementById('combat-log').innerHTML = '';
-
   calculatePlayerStats(true);
+
   player.attackCount = 0;
   player.healCount = 0;
   player.critStacks = 0;
@@ -432,7 +425,6 @@ function triggerStartBattle() {
 
   log(`🚨 <b>TRẬN ĐẤU BẮT ĐẦU!</b> (Phần thưởng nếu thắng: +${enemy.rewardTickets} vé Roll)`, 'log-sys');
   updateUI();
-
   battleTimer = setInterval(battleTick, 1000);
 }
 
@@ -453,6 +445,7 @@ function battleTick() {
       log("⏳ Bạn kết thúc trạng thái Tăng Tốc Đánh.", 'log-sys');
     }
   }
+
   if (enemy.frenzyTimer > 0) {
     enemy.frenzyTimer--;
     if (enemy.frenzyTimer === 0) {
@@ -462,6 +455,7 @@ function battleTick() {
   }
 
   const pActiveCards = (player.silenceTimer > 0) ? [] : equippedCardIds;
+
   applyPerSecond(player, enemy, pActiveCards, 'player', 'enemy', 'log-p');
   applyPerSecond(enemy, player, enemy.cards, 'enemy', 'player', 'log-e');
 
@@ -480,7 +474,6 @@ function battleTick() {
       ayanokoujiExecuted = true;
       showSkillBanner('enemy', '♟️ PHÁN QUYẾT TUYỆT ĐỐI (50% HP)!', '#be185d');
       log(`♟️ <b>[AYANOKOUJI-KUN]</b> Ngưỡng máu chạm điểm bẫy (<= 50% Max HP)! Kích hoạt cơ chế Phán Quyết!`, 'log-crit');
-
       if (Math.random() < 0.85) {
         player.hp = 0;
         showPopup('player', `💀 EXECUTE`, 'dmg-crit');
@@ -525,20 +518,16 @@ function battleTick() {
 
 function applyCruisePassive(obj, opponent, cardIds, objType, objName, logCls) {
   if (!cardIds.includes('cruise')) return;
-
   if (obj.cruiseDefStacks < 15) {
     obj.cruiseDefStacks++;
     showSkillBanner(objType, `🛡️ +1 THỦ (${obj.cruiseDefStacks}/15)`, '#0284c7');
     log(`🌊 [${obj.name}] hấp thu triều cường tăng <b>+1 DEF</b> (Tổng: ${obj.def + obj.cruiseDefStacks}).`, logCls);
-
     if (obj.cruiseDefStacks === 15 && !obj.cruiseTriggered) {
       obj.cruiseTriggered = true;
       showSkillBanner(objType, `🌊 BẠO PHÁT TRIỀU CƯỜNG (7 ĐÒN)!`, '#0284c7');
       log(`🌊🌊🌊 <b>[${objName}] BẠO PHÁT TRIỀU CƯỜNG! Tung 7 đòn liên hoàn (mỗi đòn 50% Thủ)!</b>`, 'log-crit');
-
       let currentTotalDef = obj.def + obj.cruiseDefStacks;
       let strikeDamage = Math.max(1, Math.round(currentTotalDef * 0.5));
-
       for (let i = 1; i <= 7; i++) {
         setTimeout(() => {
           if (opponent.hp <= 0) return;
@@ -559,12 +548,10 @@ function executeBlesUltimate() {
   let currentAtk = enemy.atk + (enemy.blesBonusAtk || 0);
   let rawDmg = Math.round(currentAtk * 0.15);
   let realDmg = calcDamage(rawDmg, player.def);
-
   player.hp = Math.max(0, player.hp - realDmg);
   showPopup('player', `💥 -${realDmg}`, 'dmg-crit');
   showSkillBanner('enemy', '👑 TRẢM SÁT 15% SÁT THƯƠNG!', '#f59e0b');
   log(`👑 <b>[KHIẾT NGUYỄN]</b> Kích hoạt TRẢM SÁT gây <b>${realDmg}</b> sát thương lên Bạn!`, 'log-crit');
-
   if ((enemy.blesStacks || 0) < 15) {
     enemy.blesStacks = (enemy.blesStacks || 0) + 1;
     enemy.blesBonusAtk = (enemy.blesBonusAtk || 0) + 30;
@@ -583,7 +570,6 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     showSkillBanner(srcType, '✨ THUẬT SƯ HỒI MÁU!', '#4ade80');
     log(`✨ [${source.name}] hồi <b>+${source.hp - old} HP</b>.`, logCls);
   }
-
   if (cardIds.includes('phoenix')) {
     let burn = Math.max(1, Math.round(target.maxHp * 0.003));
     target.hp = Math.max(0, target.hp - burn);
@@ -591,7 +577,6 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     showSkillBanner(tarType, '🔥 THIÊU ĐỐT!', '#fb923c');
     log(`🔥 [${source.name}] thiêu đốt đối thủ mất <b>${burn}</b> ST chuẩn.`, logCls);
   }
-
   if (cardIds.includes('crit') && source.critStacks < 50) {
     source.critStacks++;
   }
@@ -600,7 +585,6 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
 function executeStrikeSeries(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) {
   strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls);
   if (defObj.hp <= 0 || atkObj.hp <= 0) return;
-
   if (cardIds.includes('frenzy') && Math.random() < 0.12) {
     showSkillBanner(atkType, '⚡ PHẠM ĐẠT CUỒNG NỘ!', '#38bdf8');
     log(`⚡ <b>[${atkName}] KÍCH HOẠT TỐC ĐÁNH PHẠM ĐẠT!</b> Đánh thêm 1 đòn & tăng tốc 1s/đòn trong 4s!`, 'log-frenzy');
@@ -615,8 +599,8 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
   let effectiveAtk = atkObj.atk + (atkObj.moraBonusAtk || 0);
   let effectiveDef = defObj.def + (defObj.cruiseDefStacks || 0);
   let raw = calcDamage(effectiveAtk, effectiveDef);
-
   let isCrit = false;
+
   if (cardIds.includes('crit')) {
     let rate = (atkObj.critStacks * 0.5) / 100;
     if (Math.random() < rate) {
@@ -633,13 +617,12 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     let reflect = Math.round(raw * 0.5);
     atkObj.hp = Math.max(0, atkObj.hp - reflect);
     showPopup(defType, `BLOCK!`, 'dmg-true');
-    showPopup(attacker => (attackerType === 'player' ? 'player' : 'enemy'), `-${reflect}`, 'dmg-norm');
+    showPopup(atkType, `-${reflect}`, 'dmg-norm');
     showSkillBanner(defType, '🛡️ BLOCK & PHẢN ĐÒN!', '#facc15');
     log(`🛡️ [${defObj.name}] BLOCK & phản lại <b>${reflect}</b> sát thương!`, 'log-sys');
     return;
   }
 
-  // MORA: TỈ LỆ 80% (0.80)
   if (defCardIds.includes('mora') && Math.random() < 0.80) {
     let healAmount = Math.max(1, Math.round(raw * 0.5));
     defObj.hp = Math.min(defObj.maxHp, defObj.hp + healAmount);
@@ -647,7 +630,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     showPopup(defType, `+${healAmount}`, 'dmg-heal');
     showSkillBanner(defType, '🐍 MORA HẤP THỤ!', '#0d9488');
     log(`🐍 [${defObj.name}] kích hoạt Hấp Thụ hồi lại <b>+${healAmount} HP</b>.`, 'log-sys');
-
     if (defObj.moraHealCount % 2 === 0 && (defObj.moraBonusAtk || 0) < 96) {
       defObj.moraBonusAtk = Math.min(96, (defObj.moraBonusAtk || 0) + 2);
       showSkillBanner(defType, `⚔️ +2 ATK MORA! (${defObj.moraBonusAtk}/96)`, '#f59e0b');
@@ -655,7 +637,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     }
   }
 
-  // ATULA: 35% TỈ LỆ TÍCH 100% GIÁ TRỊ VÀO HUYẾT HỒN
   if (defCardIds.includes('atula') && Math.random() < 0.35) {
     let soulAdd = raw;
     defObj.bloodSoul = (defObj.bloodSoul || 0) + soulAdd;
@@ -678,7 +659,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     let drainHp = Math.min(30, atkObj.hp);
     atkObj.hp = Math.max(0, atkObj.hp - 30);
     defObj.hp = Math.min(defObj.maxHp, defObj.hp + drainHp);
-
     showPopup(atkType, `-30`, 'dmg-true');
     showPopup(defType, `+${drainHp}`, 'dmg-heal');
     showSkillBanner(defType, '💀 KOLOS: KHÓA NỘI TẠI & HÚT 30 HP!', '#7c3aed');
@@ -708,7 +688,6 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
 
 function checkCombatEnd() {
   const btnStart = document.getElementById('btn-start-battle');
-
   if (enemy && enemy.id === 'atula' && enemy.bloodSoul >= player.hp && player.hp > 0) {
     let executeDmg = enemy.bloodSoul;
     player.hp = 0;
@@ -727,18 +706,17 @@ function checkCombatEnd() {
     updateUI();
     return true;
   }
+
   if (enemy && enemy.hp <= 0) {
     clearInterval(battleTimer);
     isFighting = false;
     
     const gainedTickets = enemy.rewardTickets || 1;
     rollTickets += gainedTickets;
-
     if (enemy.id !== 'training' && !poolAvailableCards.includes(enemy.id)) {
       poolAvailableCards.push(enemy.id);
       log(`🌟 <b>CHIẾN CÔNG HIỂN HÁCH!</b> Mở khóa <b>${CARDS[enemy.id].name}</b> vào Bể Roll!`, 'log-crit');
     }
-
     saveData();
     log(`🎉 <b>Bạn đã đánh bại ${enemy.name}! Nhận được +${gainedTickets} vé Roll thẻ bài!</b>`, 'log-sys');
     btnStart.disabled = false;
@@ -751,7 +729,6 @@ function checkCombatEnd() {
         document.getElementById('victory-modal').style.display = 'flex';
       }, 800);
     }
-
     return true;
   }
   return false;
@@ -762,11 +739,9 @@ function submitVictoryName() {
   const name = input.value.trim() || 'Vô Danh Anh Hùng';
   const now = new Date();
   const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} - ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
-
   hallOfFame.unshift({ name: name, time: timeStr });
   saveData();
   renderHallOfFame();
-
   document.getElementById('victory-modal').style.display = 'none';
   alert(`🏆 Chúc mừng ${name}! Tên của bạn đã được khắc ghi vào Bảng Xếp Hạng Phá Đảo!`);
 }
@@ -777,7 +752,6 @@ function renderHallOfFame() {
     list.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748b;">Chưa có anh hùng nào phá đảo. Hãy là người đầu tiên!</td></tr>';
     return;
   }
-
   list.innerHTML = hallOfFame.map((item, idx) => `
     <tr>
       <td class="hall-rank">#${idx + 1}</td>
@@ -795,20 +769,15 @@ function rollCard(times) {
     alert(`Bạn cần có ít nhất ${times} vé! Hãy đánh bại đối thủ để nhận thêm vé.`);
     return;
   }
-
   const availableToRoll = poolAvailableCards.filter(id => !unlockedCards.includes(id));
-
   if (availableToRoll.length === 0) {
     alert("🎉 Bạn đã mở khóa và sở hữu TOÀN BỘ các thẻ bài hiện có trong Pool! Hãy khiêu chiến thêm Boss mới để mở khóa thẻ vào Pool.");
     return;
   }
-
   rollTickets -= times;
   const results = [];
-
   for (let i = 0; i < times; i++) {
     const remainingToRoll = poolAvailableCards.filter(id => !unlockedCards.includes(id));
-
     if (remainingToRoll.length > 0 && Math.random() < 0.25) {
       const randomKey = remainingToRoll[Math.floor(Math.random() * remainingToRoll.length)];
       unlockedCards.push(randomKey);
@@ -817,7 +786,6 @@ function rollCard(times) {
       results.push({ win: false, name: 'Trượt rồi...' });
     }
   }
-
   saveData();
   renderCards();
   updateUI();
@@ -825,7 +793,6 @@ function rollCard(times) {
   const modal = document.getElementById('gacha-modal');
   const container = document.getElementById('gacha-content');
   container.innerHTML = '';
-
   results.forEach(res => {
     const item = document.createElement('div');
     item.className = `gacha-item ${res.win ? 'win' : ''}`;
@@ -834,7 +801,6 @@ function rollCard(times) {
       : `💨 Trượt`;
     container.appendChild(item);
   });
-
   modal.style.display = 'flex';
 }
 
@@ -851,10 +817,8 @@ function setCardFilter(filter, element) {
 
 function toggleEquip(cardId) {
   if (!unlockedCards.includes(cardId)) return;
-
   const idx = equippedCardIds.indexOf(cardId);
   const maxLimit = getMaxEquipLimit();
-
   if (idx > -1) {
     equippedCardIds.splice(idx, 1);
     log(`Đã gỡ thẻ: ${CARDS[cardId].name}`, 'log-sys');
@@ -866,7 +830,6 @@ function toggleEquip(cardId) {
     equippedCardIds.push(cardId);
     log(`Đã trang bị: ${CARDS[cardId].name}`, 'log-sys');
   }
-
   calculatePlayerStats(true);
   saveData();
   renderCards();
@@ -876,10 +839,8 @@ function toggleEquip(cardId) {
 function renderCards() {
   const pool = document.getElementById('roll-pool');
   pool.innerHTML = '';
-
   for (let key in CARDS) {
     const c = CARDS[key];
-
     if (currentCardFilter === 'basic' && c.tier !== 'basic') continue;
     if (currentCardFilter === 'elite' && c.tier !== 'elite') continue;
     if (currentCardFilter === 'super' && (c.tier !== 'super' && c.tier !== 'final')) continue;
@@ -922,7 +883,6 @@ function renderCards() {
 
 function updateUI() {
   document.getElementById('roll-tickets').innerText = rollTickets;
-
   document.getElementById('p-hp-bar').style.width = (player.hp / player.maxHp * 100) + '%';
   document.getElementById('p-hp-txt').innerText = `HP: ${player.hp} / ${player.maxHp}`;
   document.getElementById('p-stats').innerText = `Tấn công: ${player.atk} | Giáp: ${player.def + (player.cruiseDefStacks || 0)} | Tốc: ${player.attackCooldown}s/đòn`;
