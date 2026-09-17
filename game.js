@@ -1,5 +1,5 @@
 // ==========================================
-// 1. TẤT CẢ THẺ BÀI TRONG GAME (12 THẺ ĐẦY ĐỦ)
+// 1. TẤT CẢ THẺ BÀI TRONG GAME (12 THẺ)
 // ==========================================
 const CARDS = {
   // 3 THẺ CƠ BẢN
@@ -131,7 +131,7 @@ const CARDS = {
     atkBonus: 5, hpBonus: 75, defBonus: 0
   },
 
-  // FINAL BOSS (ĐỔI TÊN THÀNH KHIẾT NGUYỄN)
+  // FINAL BOSS (KHIẾT NGUYỄN)
   bles: {
     id: 'bles',
     name: 'Thẻ Tối Thượng Khiết Nguyễn',
@@ -232,13 +232,18 @@ function calcDamage(atk, def) {
   return Math.max(1, finalDamage);
 }
 
-// CẬP NHẬT GIỚI HẠN THẺ THEO YÊU CẦU:
-// Elite: 2 thẻ | Siêu Boss: 3 thẻ | Final: 5 thẻ
 function getMaxEquipLimit() {
   if (!enemy || enemy.id === 'training') return 3;
-  if (enemy.tier === 'elite') return 2; // Elite boss: Tối đa 2 thẻ
-  if (enemy.tier === 'final') return 5; // Final boss: Tối đa 5 thẻ
-  return 3; // Siêu boss: Tối đa 3 thẻ
+  if (enemy.tier === 'elite') return 2;
+  if (enemy.tier === 'final') return 5;
+  return 3;
+}
+
+// Kiểm tra điều kiện khiêu chiến Ayanokouji (phải mang đủ 3 thẻ Siêu Boss: Mora, Atula, Kolos)
+function checkAyanokoujiRequirement() {
+  if (!enemy || enemy.id !== 'ayanokouji') return true;
+  const requiredSuperCards = ['mora', 'atula', 'kolos'];
+  return requiredSuperCards.every(id => equippedCardIds.includes(id));
 }
 
 function calculatePlayerStats(refillHp = false) {
@@ -344,7 +349,6 @@ function selectEnemy(targetId) {
       blesBonusAtk: 0
     };
   } else {
-    // 7 ELITE BOSS (120 HP - 10 ATK - 10 DEF)
     const baseCard = CARDS[targetId];
     enemy = {
       id: targetId,
@@ -387,6 +391,12 @@ function triggerStartBattle() {
   const maxLimit = getMaxEquipLimit();
   if (equippedCardIds.length > maxLimit) {
     alert(`LỖI: Bạn đang mang ${equippedCardIds.length} thẻ! Với đối thủ này bạn chỉ được mang tối đa ${maxLimit} thẻ.`);
+    return;
+  }
+
+  // KIỂM TRA ĐIỀU KIỆN BOSS AYANOKOUJI
+  if (enemy.id === 'ayanokouji' && !checkAyanokoujiRequirement()) {
+    alert("🔒 ĐIỀU KIỆN KHÓA: Bạn bắt buộc phải trang bị đủ cả 3 thẻ Siêu Boss (Mora, Atula, Kolos) thì mới được quyền khiêu chiến Ayanokouji-kun!");
     return;
   }
 
@@ -462,7 +472,7 @@ function battleTick() {
   applyPerSecond(player, enemy, pActiveCards, 'player', 'enemy', 'log-p');
   applyPerSecond(enemy, player, enemy.cards, 'enemy', 'player', 'log-e');
 
-  // HIỆU ỨNG THẺ AYANOKOUJI (NGƯỜI CHƠI TRANG BỊ)
+  // THẺ AYANOKOUJI (NGƯỜI CHƠI TRANG BỊ)
   if (tick % 4 === 0 && pActiveCards.includes('ayanokouji')) {
     if (Math.random() < 0.05) {
       let cutDmg = Math.max(1, Math.round(enemy.hp * 0.5));
@@ -473,7 +483,7 @@ function battleTick() {
     }
   }
 
-  // CƠ CHẾ RIÊNG CỦA BOSS AYANOKOUJI: Khi 1 trong 2 còn <= 50% Max HP
+  // CƠ CHẾ BOSS AYANOKOUJI: Khi 1 trong 2 bên <= 50% Max HP
   if (enemy.id === 'ayanokouji' && !ayanokoujiExecuted) {
     if (player.hp <= player.maxHp * 0.5 || enemy.hp <= enemy.maxHp * 0.5) {
       ayanokoujiExecuted = true;
@@ -507,7 +517,6 @@ function battleTick() {
     if (checkCombatEnd()) return;
   }
 
-  // FINAL BOSS: KHIẾT NGUYỄN
   if (enemy.id === 'bles') {
     if (tick % 3 === 0) {
       executeBlesUltimate();
@@ -557,7 +566,7 @@ function applyCruisePassive(obj, opponent, cardIds, objType, objName, logCls) {
 function executeBlesUltimate() {
   enemy.attackCount++;
   let currentAtk = enemy.atk + (enemy.blesBonusAtk || 0);
-  let rawDmg = Math.round(currentAtk * 0.15); // 15% sát thương
+  let rawDmg = Math.round(currentAtk * 0.15);
   let realDmg = calcDamage(rawDmg, player.def);
 
   player.hp = Math.max(0, player.hp - realDmg);
@@ -749,7 +758,7 @@ function checkCombatEnd() {
 }
 
 // ==========================================
-// 4. ROLL GACHA
+// 4. ROLL GACHA (CHỈ ROLL RA THẺ CHƯA SỞ HỮU)
 // ==========================================
 function rollCard(times) {
   if (rollTickets < times) {
@@ -757,17 +766,26 @@ function rollCard(times) {
     return;
   }
 
+  // LỌC CÁC THẺ TRONG POOL MÀ CHƯA SỞ HỮU (KHÔNG BAO GIỜ ROLL TRÙNG)
+  const availableToRoll = poolAvailableCards.filter(id => !unlockedCards.includes(id));
+
+  if (availableToRoll.length === 0) {
+    alert("🎉 Bạn đã mở khóa và sở hữu TOÀN BỘ các thẻ bài hiện có trong Pool! Hãy khiêu chiến thêm Boss mới để đưa thẻ vào Pool trước khi Roll tiếp.");
+    return;
+  }
+
   rollTickets -= times;
   const results = [];
 
   for (let i = 0; i < times; i++) {
-    if (Math.random() < 0.25) {
-      const randomKey = poolAvailableCards[Math.floor(Math.random() * poolAvailableCards.length)];
-      const isNew = !unlockedCards.includes(randomKey);
-      if (isNew) {
-        unlockedCards.push(randomKey);
-      }
-      results.push({ win: true, name: CARDS[randomKey].name, isNew: isNew });
+    // Cập nhật lại danh sách còn có thể roll theo thời gian thực trong lượt quay
+    const remainingToRoll = poolAvailableCards.filter(id => !unlockedCards.includes(id));
+
+    if (remainingToRoll.length > 0 && Math.random() < 0.25) {
+      // Bốc 1 thẻ chưa sở hữu
+      const randomKey = remainingToRoll[Math.floor(Math.random() * remainingToRoll.length)];
+      unlockedCards.push(randomKey); // Thêm ngay vào danh sách sở hữu
+      results.push({ win: true, name: CARDS[randomKey].name, isNew: true });
     } else {
       results.push({ win: false, name: 'Trượt rồi...' });
     }
@@ -785,7 +803,7 @@ function rollCard(times) {
     const item = document.createElement('div');
     item.className = `gacha-item ${res.win ? 'win' : ''}`;
     item.innerHTML = res.win 
-      ? `⭐ ${res.name} <br><small>${res.isNew ? '(MỚI NHẬN!)' : '(Đã sở hữu)'}</small>`
+      ? `⭐ ${res.name} <br><small style="color: #4ade80;">(MỚI NHẬN!)</small>`
       : `💨 Trượt`;
     container.appendChild(item);
   });
@@ -828,7 +846,6 @@ function toggleEquip(cardId) {
   updateUI();
 }
 
-// HIỂN THỊ ĐẦY ĐỦ 100% CÁC THẺ TRONG POOL VÀ KHO
 function renderCards() {
   const pool = document.getElementById('roll-pool');
   pool.innerHTML = '';
@@ -836,13 +853,9 @@ function renderCards() {
   for (let key in CARDS) {
     const c = CARDS[key];
 
-    // Lọc đúng danh mục từng tab:
-    // Tab basic: basic
-    // Tab elite: elite
-    // Tab super: super & final (gồm cả Mora, Atula, Kolos, Ayanokouji, Khiết Nguyễn)
     if (currentCardFilter === 'basic' && c.tier !== 'basic') continue;
     if (currentCardFilter === 'elite' && c.tier !== 'elite') continue;
-    if (currentCardFilter === 'super' && c.tier !== 'super' && c.tier !== 'final') continue;
+    if (currentCardFilter === 'super' && (c.tier !== 'super' && c.tier !== 'final')) continue;
 
     const isInPool = poolAvailableCards.includes(key);
     const isUnlocked = unlockedCards.includes(key);
@@ -906,11 +919,15 @@ function updateUI() {
     eqList.innerHTML = equippedCardIds.map(id => `<span class="equipped-tag">${CARDS[id].name}</span>`).join(' ');
   }
 
+  // Kiểm tra điều kiện khiêu chiến trên nút Bắt đầu
   const btnStart = document.getElementById('btn-start-battle');
   if (enemy && !isFighting) {
     if (equippedCardIds.length > maxLimit) {
       btnStart.disabled = true;
       btnStart.innerText = `⚠️ BẠN ĐANG MANG QUÁ ${maxLimit} THẺ (GỠ BỚT ĐỂ ĐẤU)`;
+    } else if (enemy.id === 'ayanokouji' && !checkAyanokoujiRequirement()) {
+      btnStart.disabled = true;
+      btnStart.innerText = `🔒 CẦN MANG ĐỦ 3 THẺ SIÊU BOSS (MORA, ATULA, KOLOS)`;
     } else {
       btnStart.disabled = false;
       btnStart.innerText = `⚔️ BẮT ĐẦU CHIẾN ĐẤU VỚI ${enemy.name.toUpperCase()}!`;
