@@ -59,7 +59,7 @@ const CARDS = {
     enemyName: 'Ho-Oh Hữu Phai',
     tier: 'elite',
     imgUrl: 'https://play.pokemonshowdown.com/sprites/ani/hooh.gif',
-    desc: '+20 HP, +3 ATK. Mỗi 1s thiêu đốt đối thủ mất 0.3% HP tối đa (ST chuẩn).',
+    desc: '+20 HP, +3 ATK. Mỗi 1s thiêu đốt đối thủ mất 0.9% HP tối đa (ST chuẩn).', // Đã buff lên 0.9%
     atkBonus: 3, hpBonus: 20, defBonus: 0
   },
   crit: {
@@ -571,11 +571,12 @@ function applyPerSecond(source, target, cardIds, srcType, tarType, logCls) {
     log(`✨ [${source.name}] hồi <b>+${source.hp - old} HP</b>.`, logCls);
   }
   if (cardIds.includes('phoenix')) {
-    let burn = Math.max(1, Math.round(target.maxHp * 0.003));
+    let burn = Math.max(1, Math.round(target.maxHp * 0.009)); // Đã buff lên 0.9%
     target.hp = Math.max(0, target.hp - burn);
     showPopup(tarType, `-${burn}`, 'dmg-true');
     showSkillBanner(tarType, '🔥 THIÊU ĐỐT!', '#fb923c');
     log(`🔥 [${source.name}] thiêu đốt đối thủ mất <b>${burn}</b> ST chuẩn.`, logCls);
+    if (typeof playFireSound === 'function') playFireSound();
   }
   if (cardIds.includes('crit') && source.critStacks < 50) {
     source.critStacks++;
@@ -670,9 +671,11 @@ function strikeOnce(atkObj, defObj, cardIds, atkType, defType, atkName, logCls) 
     showPopup(defType, `💥 -${raw}`, 'dmg-crit');
     showSkillBanner(defType, '💥 CHÍ MẠNG x3!', '#ef4444');
     log(`💥 <b>[CHÍ MẠNG x3]</b> ${atkName} gây <b>${raw}</b> ST!`, 'log-crit');
+    if (typeof playCritSound === 'function') playCritSound();
   } else {
     showPopup(defType, `-${raw}`, 'dmg-norm');
     log(`🗡️ ${atkName} gây <b>${raw}</b> sát thương.`, logCls);
+    if (typeof playSlashSound === 'function') playSlashSound();
   }
 
   if (cardIds.includes('archer') && atkObj.attackCount % 3 === 0) {
@@ -802,6 +805,10 @@ function rollCard(times) {
     container.appendChild(item);
   });
   modal.style.display = 'flex';
+
+  if (results.some(r => r.win) && typeof playWinSound === 'function') {
+    playWinSound();
+  }
 }
 
 function closeGachaModal() {
@@ -816,6 +823,12 @@ function setCardFilter(filter, element) {
 }
 
 function toggleEquip(cardId) {
+  // CHẶN GIAN LẬN ĐỔI THẺ TRONG TRẬN ĐẤU
+  if (isFighting) {
+    alert("⚠️ Không thể tháo/lắp thẻ khi trận đấu đang diễn ra!");
+    return;
+  }
+
   if (!unlockedCards.includes(cardId)) return;
   const idx = equippedCardIds.indexOf(cardId);
   const maxLimit = getMaxEquipLimit();
@@ -951,33 +964,6 @@ function resetGame() {
     localStorage.clear();
     location.reload();
   }
-}
-function toggleEquip(cardId) {
-  // THÊM ĐOẠN NÀY ĐỂ CHẶN GIAN LẬN ĐỔI THẺ TRONG TRẬN ĐẤU
-  if (isFighting) {
-    alert("⚠️ Không thể tháo/lắp thẻ khi trận đấu đang diễn ra!");
-    return;
-  }
-
-  if (!unlockedCards.includes(cardId)) return;
-  const idx = equippedCardIds.indexOf(cardId);
-  const maxLimit = getMaxEquipLimit();
-  
-  if (idx > -1) {
-    equippedCardIds.splice(idx, 1);
-    log(`Đã gỡ thẻ: ${CARDS[cardId].name}`, 'log-sys');
-  } else {
-    if (equippedCardIds.length >= maxLimit) {
-      alert(`Với đối thủ này, bạn chỉ được phép trang bị tối đa ${maxLimit} thẻ! Hãy gỡ bớt thẻ trước.`);
-      return;
-    }
-    equippedCardIds.push(cardId);
-    log(`Đã trang bị: ${CARDS[cardId].name}`, 'log-sys');
-  }
-  calculatePlayerStats(true);
-  saveData();
-  renderCards();
-  updateUI();
 }
 
 calculatePlayerStats(true);
